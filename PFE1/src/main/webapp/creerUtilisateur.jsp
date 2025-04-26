@@ -33,6 +33,10 @@
             <a class="nav-link text-white" href="creerUtilisateur.jsp">Créer utilisateur</a>
             <a class="nav-link text-white" href="affectation_chambre.jsp">Affectation des chambres</a>
             <a class="nav-link text-white" href="planification_sortie.jsp">Planification des sorties</a>
+             <!-- BOUTON DECONNEXION -->
+            <form action="Logout" method="post" style="margin: 0;">
+                <button type="submit" class="btn btn-danger">Déconnexion</button>
+            </form>
         </div>
     </div>
 </header>

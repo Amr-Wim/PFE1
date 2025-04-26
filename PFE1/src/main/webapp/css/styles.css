@@ -46,7 +46,7 @@ header {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: #fff;
+  color: #1e3a5f;
   text-shadow: 0 2px 4px rgba(126, 0, 33, 0.6);
 }
 
@@ -244,72 +244,4 @@ ul li {
 }
 
 
-.stat-container {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-
-.stat-card {
-  background-color: #e6f0ff; /* bleu très clair assorti */
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  padding: 30px;
-  text-align: center;
-  transition: transform 0.3s;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-}
-
-.stat-title {
-  font-size: 22px;
-  color: #003366; /* bleu foncé comme tes titres */
-  margin-bottom: 15px;
-}
-
-.stat-desc {
-  font-size: 16px;
-  color: #333;
-}
-
-.card {
-  background-color: #f0f8ff; /* bleu clair doux au lieu du blanc */
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: none;
-}
-
-.card-header {
-  font-weight: bold;
-  font-size: 18px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-}
-
-.form-control,
-.form-select {
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  transition: box-shadow 0.3s ease;
-}
-
-.form-control:focus,
-.form-select:focus {
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
-  border-color: #80bdff;
-  outline: none;
-}
-
-.btn-success {
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
-}
 

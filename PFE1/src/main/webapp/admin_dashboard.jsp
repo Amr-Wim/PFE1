@@ -70,6 +70,11 @@
             <a class="nav-link text-white" href="creerUtilisateur.jsp">Créer utilisateur</a>
             <a class="nav-link text-white" href="affectation_chambre.jsp">Affectation des chambres</a>
             <a class="nav-link text-white" href="planification_sortie.jsp">Planification des sorties</a>
+            
+             <!-- BOUTON DECONNEXION -->
+            <form action="Logout" method="post" style="margin: 0;">
+                <button type="submit" class="btn btn-danger">Déconnexion</button>
+            </form>
         </div>
     </div>
 </header>
@@ -101,7 +106,7 @@
         <h3>📊 Statistiques d'occupation des lits</h3>
         <canvas id="occupationChart" width="400" height="200"></canvas>
     </div>
-     <a href="index.jsp" class="btn btn-secondary mt-4">⬅️ Retour à l'accueil</a>
+     
 </div>
 <footer>
      &copy; 2025 - CarePath. Tous droits réservés.

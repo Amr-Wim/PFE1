@@ -38,6 +38,10 @@
             <a class="nav-link text-white" href="parcours_patient.jsp">Parcours</a>
                         <a class="nav-link text-white" href="bon_sortie.jsp">Bon sortie</a>
                                     <a class="nav-link text-white" href="resultats_analyses.jsp">Résultats d'éxamens</a>
+         <!-- BOUTON DECONNEXION -->
+            <form action="Logout" method="post" style="margin: 0;">
+                <button type="submit" class="btn btn-danger">Déconnexion</button>
+            </form>
         </div>
  </div>
    </header>
