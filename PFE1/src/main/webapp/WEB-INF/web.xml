@@ -29,4 +29,14 @@
     <servlet-name>logout</servlet-name>
     <url-pattern>/logout</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>CreerUserServlet</display-name>
+    <servlet-name>CreerUserServlet</servlet-name>
+    <servlet-class>controllers.CreerUserServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CreerUserServlet</servlet-name>
+    <url-pattern>/creerUser</url-pattern>
+  </servlet-mapping>
 </web-app>
