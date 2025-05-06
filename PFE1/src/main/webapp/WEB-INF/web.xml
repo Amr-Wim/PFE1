@@ -39,4 +39,14 @@
     <servlet-name>CreerUserServlet</servlet-name>
     <url-pattern>/creerUser</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AffectationServlet</display-name>
+    <servlet-name>AffectationServlet</servlet-name>
+    <servlet-class>controllers.AffectationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AffectationServlet</servlet-name>
+    <url-pattern>/affectation</url-pattern>
+  </servlet-mapping>
 </web-app>

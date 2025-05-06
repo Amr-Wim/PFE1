@@ -68,7 +68,7 @@
         <div class="d-flex gap-3">
             <a class="nav-link active text-white" href="#">Tableau de bord</a>
             <a class="nav-link text-white" href="creerUtilisateur.jsp">Créer utilisateur</a>
-            <a class="nav-link text-white" href="affectation_chambre.jsp">Affectation des chambres</a>
+            <a class="nav-link text-white" href="Affectation">Affectation des chambres</a>
             <a class="nav-link text-white" href="planification_sortie.jsp">Planification des sorties</a>
             
              <!-- BOUTON DECONNEXION -->
