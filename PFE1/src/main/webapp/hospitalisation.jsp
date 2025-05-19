@@ -1,6 +1,10 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>CarePath - Mes Informations</title>
@@ -127,90 +131,41 @@
             </nav>
         </div>
     </header>
-<body>
 
- 
-    <div class="container py-5">
-        <h1 class="text-center mb-5">Tableau de Bord Patient</h1>
-        
-        <div class="row g-4">
-            <!-- Informations personnelles -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-user-circle card-icon"></i>
-                        <h3 class="section-title">Informations personnelles</h3>
-                        <p class="card-text">Consultez et mettez à jour vos coordonnées</p>
-                        <a href="fiche_patient.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-edit me-2"></i>Gérer mon profil
-                        </a>
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="fas fa-procedures me-2"></i>Informations d'hospitalisation</h3>
+        </div>
+        <div class="card-body">
+            <c:if test="${not empty hospitalisation}">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Hôpital :</strong> ${hospitalisation.nomHopital}</p>
+                        <p><strong>Service :</strong> ${hospitalisation.service}</p>
+                        <p><strong>Chambre :</strong> ${hospitalisation.chambre}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Médecin responsable :</strong> Dr. ${hospitalisation.medecin.nom}</p>
+                        <p><strong>Date d'admission :</strong> 
+                           <fmt:formatDate value="${hospitalisation.dateAdmission}" pattern="dd/MM/yyyy"/></p>
+                        <p><strong>Durée prévue :</strong> ${hospitalisation.duree}</p>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Dossier médical -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-file-medical card-icon"></i>
-                        <h3 class="section-title">Dossier médical</h3>
-                        <p class="card-text">Accédez à votre historique médical complet</p>
-                        <a href="dossier_medical.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-folder-open me-2"></i>Consulter
-                        </a>
-                    </div>
+                <div class="alert alert-${hospitalisation.etat == 'Critique' ? 'danger' : 'info'}">
+                    <strong>État :</strong> ${hospitalisation.etat}<br>
+                    <strong>Motif :</strong> ${hospitalisation.motif}
                 </div>
-            </div>
-            
-            <!-- Hospitalisation -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-procedures card-icon"></i>
-                        <h3 class="section-title">Hospitalisation</h3>
-                        <p class="card-text">Informations sur votre séjour hospitalier</p>
-                        <a href="hospitalisation.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-info-circle me-2"></i>Détails
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Analyses médicales -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-flask card-icon"></i>
-                        <h3 class="section-title">Analyses médicales</h3>
-                        <p class="card-text">Date de retrait  de vos analyses</p>
-                        <a href="analyses.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-clock me-2"></i>Consulter
-                        </a>
-                    </div>
-                </div>
-            </div>
+            </c:if>
         </div>
     </div>
+</div>
 
-   <footer>
+
+<footer>
     &copy; 2025 - CarePath. Tous droits réservés.
 </footer>
-    
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</body>
-</html>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Active le tooltip partout
-        document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
-        });
-    </script>
 </body>
 </html>

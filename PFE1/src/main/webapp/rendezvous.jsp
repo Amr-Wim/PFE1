@@ -78,42 +78,6 @@
         </ul>
     </div>
 
-    <!-- Formulaire pour prendre un rendez-vous -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-logo1">
-            Prendre un nouveau rendez-vous
-        </div>
-        <div class="card-body">
-            <form action="AjouterRendezVousServlet" method="post">
-                <div class="mb-3">
-                    <label for="date" class="form-label">Date du rendez-vous</label>
-                    <input type="date" class="form-control" id="date" name="date" required>
-                </div>
-                <div class="mb-3">
-                    <label for="type" class="form-label">Type de rendez-vous</label>
-                    <input type="text" class="form-control" id="type" name="type" placeholder="Consultation, Examen..." required>
-                </div>
-                <div class="mb-3">
-                    <label for="medecin" class="form-label">Médecin</label>
-                    <select class="form-select" id="medecin" name="medecin" required>
-                        <option value="">-- Sélectionnez un médecin --</option>
-                        <%-- Exemple statique, tu peux remplacer cette partie par une boucle sur une liste passée depuis un Servlet --%>
-                        <option value="Dr. Saïd">Dr. Saïd</option>
-                        <option value="Dr. Amina Khatib">Dr. Amina Khatib</option>
-                        <option value="Dr. Karim Bensaid">Dr. Karim Bensaid</option>
-                        <%-- Exemple dynamique :
-                        List<String> medecins = (List<String>) request.getAttribute("medecins");
-                        for (String m : medecins) {
-                        %>
-                            <option value="<%= m %>"><%= m %></option>
-                        <% } %>
-                        --%>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-success">Prendre rendez-vous</button>
-            </form>
-        </div>
-    </div>
     
      <div class="text-center mt-4">
             <a href="patient_dashboard.jsp" class="btn btn-secondary">⬅️ Retour au tableau de bord</a>

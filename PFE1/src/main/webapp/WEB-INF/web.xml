@@ -49,4 +49,24 @@
     <servlet-name>AffectationServlet</servlet-name>
     <url-pattern>/affectation</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>PatientInfoServlet</display-name>
+    <servlet-name>PatientInfoServlet</servlet-name>
+    <servlet-class>controllers.PatientInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PatientInfoServlet</servlet-name>
+    <url-pattern>/PatientInfoServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>HospitalisationServlet</display-name>
+    <servlet-name>HospitalisationServlet</servlet-name>
+    <servlet-class>controllers.HospitalisationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HospitalisationServlet</servlet-name>
+    <url-pattern>/HospitalisationServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

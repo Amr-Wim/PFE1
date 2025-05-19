@@ -104,26 +104,22 @@
                 </span>
             </div>
             
-            <!-- Navigation -->
-            <nav class="d-flex align-items-center gap-3">
-                <a class="nav-link text-white" href="patient_dashboard.jsp">
-                    <i class="fas fa-tachometer-alt me-1"></i> Tableau de bord
-                </a>
-                <a class="nav-link active text-white" href="fiche_patient.jsp">
-                    <i class="fas fa-user me-1"></i> Informations
-                </a>
-                <a class="nav-link text-white" href="rendezvous.jsp">
-                    <i class="fas fa-calendar-alt me-1"></i> Rendez-vous
-                </a>
-                <a class="nav-link text-white" href="parcours_patient.jsp">
-                    <i class="fas fa-map-marked-alt me-1"></i> Parcours
-                </a>
-                <a class="nav-link text-white" href="bon_sortie.jsp">
-                    <i class="fas fa-file-signature me-1"></i> Bon de sortie
-                </a>
-                <a class="nav-link text-white" href="resultats_analyses.jsp">
-                    <i class="fas fa-flask me-1"></i> Résultats
-                </a>
+           <div class="d-flex gap-3">
+    <a class="nav-link text-white" href="patient_dashboard.jsp">
+        <i class="fas fa-tachometer-alt me-1"></i> Tableau de bord
+    </a>
+    <a class="nav-link text-white" href="fiche_patient.jsp">
+        <i class="fas fa-user me-1"></i> Informations
+    </a>
+    <a class="nav-link text-white" href="dossier_medical.jsp">
+        <i class="fas fa-file-medical me-1"></i> Dossier médical
+    </a>
+    <a class="nav-link text-white" href="hospitalisation.jsp">
+        <i class="fas fa-procedures me-1"></i> Hospitalisation
+    </a>
+    <a class="nav-link text-white" href="analyses.jsp">
+        <i class="fas fa-flask me-1"></i> Analyses
+    </a>
                 
                 <!-- Bouton Déconnexion -->
                 <form action="Logout" method="post" class="m-0">
