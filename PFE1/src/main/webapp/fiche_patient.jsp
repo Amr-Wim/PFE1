@@ -1,140 +1,173 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-   
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>CarePath - Mes Informations</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-<style>
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f2f7fb;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    max-width: 900px;
-    margin: 50px auto;
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-}
-
-h2 {
-    color: #0d6efd;
-    font-weight: 600;
-}
-
-.card {
-    border: none;
-    border-radius: 12px;
-}
-
-.card span {
-    font-weight: 500;
-}
-
-.btn-outline-primary {
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease-in-out;
-}
-
-.btn-outline-primary:hover {
-    background-color: #0d6efd;
-    color: white;
-    transform: scale(1.03);
-}
-
-.row {
-    margin-bottom: 15px;
-}
-</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a5f;
+            --secondary-color: #7e0021;
+            --light-bg: #f2f7fb;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            padding: 20px 60px;
+            border-bottom: 4px solid var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            color: white;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .info-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 180px;
+            display: inline-block;
+        }
+        
+        .info-value {
+            color: #555;
+        }
+        
+        .btn-back {
+            border-radius: 8px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
 
- <!-- Header -->
-  <header style="background-color: #1e3a5f; padding: 20px 60px; border-bottom: 4px solid #7e0021; box-shadow: 0 4px 12px rgba(0,0,0,0.2); color: white;">
-    <div class="container-fluid d-flex align-items-center justify-content-between">
-        <!-- Logo et titre -->
-        <div class="d-flex align-items-center gap-3">
-            <img src="image/image2.png" alt="Logo" style="height: 50px;">
-            <span class="fs-3 fw-bold text-uppercase" style="text-shadow: 0 2px 4px rgba(126, 0, 33, 0.6);">
-                CarePath
-            </span>
+    <!-- Header -->
+    <header>
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <!-- Logo et titre -->
+            <div class="d-flex align-items-center gap-3">
+                <img src="image/image2.png" alt="Logo CarePath" style="height: 50px;">
+                <span class="fs-3 fw-bold text-uppercase" style="text-shadow: 0 2px 4px rgba(126, 0, 33, 0.6);">
+                    CarePath
+                </span>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="d-flex align-items-center gap-3">
+                <a class="nav-link text-white" href="patient_dashboard.jsp">
+                    <i class="fas fa-tachometer-alt me-1"></i> Tableau de bord
+                </a>
+                <a class="nav-link active text-white" href="fiche_patient.jsp">
+                    <i class="fas fa-user me-1"></i> Informations
+                </a>
+                <a class="nav-link text-white" href="rendezvous.jsp">
+                    <i class="fas fa-calendar-alt me-1"></i> Rendez-vous
+                </a>
+                <a class="nav-link text-white" href="parcours_patient.jsp">
+                    <i class="fas fa-map-marked-alt me-1"></i> Parcours
+                </a>
+                <a class="nav-link text-white" href="bon_sortie.jsp">
+                    <i class="fas fa-file-signature me-1"></i> Bon de sortie
+                </a>
+                <a class="nav-link text-white" href="resultats_analyses.jsp">
+                    <i class="fas fa-flask me-1"></i> Résultats
+                </a>
+                
+                <!-- Bouton Déconnexion -->
+                <form action="Logout" method="post" class="m-0">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                    </button>
+                </form>
+            </nav>
         </div>
-        
-        <!-- Liens de navigation affichés côte à côte -->
-        <div class="d-flex gap-3">
-            <a class="nav-link active text-white" href="patient_dashboard.jsp">Tableau de bord</a>
-            <a class="nav-link text-white" href="fiche_patient.jsp">Informations personnelles</a>
-            <a class="nav-link text-white" href="rendezvous.jsp">Rendez vous</a>
-            <a class="nav-link text-white" href="parcours_patient.jsp">Parcours</a>
-                        <a class="nav-link text-white" href="bon_sortie.jsp">Bon sortie</a>
-                                    <a class="nav-link text-white" href="resultats_analyses.jsp">Résultats d'éxamens</a>
-                                     <!-- BOUTON DECONNEXION -->
-            <form action="Logout" method="post" style="margin: 0;">
-                <button type="submit" class="btn btn-danger">Déconnexion</button>
-            </form>
-        </div>
- </div>
-   </header>
- 
+    </header>
 
-
-
-<div class="container mt-5">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-primary mb-4">Mes Informations Personnelles</h2>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Nom :</strong> <span>El Amimri</span>
+     <div class="container mt-4">
+        <div class="card p-4">
+            <h2 class="mb-4"><i class="fas fa-user-circle me-2"></i>Mes Informations Personnelles</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p><span class="info-label"><i class="fas fa-id-card me-2"></i>Nom :</span> 
+                       <c:out value="${patient.nom}"/></p>
+                    <p><span class="info-label"><i class="fas fa-id-card me-2"></i>Prénom :</span> 
+                       <c:out value="${patient.prenom}"/></p>
+                    <p><span class="info-label"><i class="fas fa-birthday-cake me-2"></i>Date de naissance :</span> 
+                       <fmt:formatDate value="${patient.dateNaissance}" pattern="dd/MM/yyyy"/></p>
+                </div>
+                <div class="col-md-6">
+                    <p><span class="info-label"><i class="fas fa-envelope me-2"></i>Email :</span> 
+                       <c:out value="${patient.email}"/></p>
+                    <p><span class="info-label"><i class="fas fa-map-marker-alt me-2"></i>Adresse :</span> 
+                       <c:out value="${patient.adresse}"/></p>
+                </div>
             </div>
-            <div class="col-md-6">
-                <strong>Prénom :</strong> <span>Wiame</span>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Date de naissance :</strong> <span>2001-08-14</span>
-            </div>
-            <div class="col-md-6">
-                <strong>Sexe :</strong> <span>Féminin</span>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <strong>Email :</strong> <span>wiame@gmail.com</span>
-            </div>
-            <div class="col-md-6">
-                <strong>Téléphone :</strong> <span>+212 6 12 34 56 78</span>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-12">
-                <strong>Adresse :</strong> <span>Rue des Lilas, Fès, Maroc</span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-end">
-       
+            
+            <div class="text-center mt-4">
+                <a href="patient_dashboard.jsp" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Retour au tableau de bord
+                </a>
             </div>
         </div>
     </div>
-    
-    <div class="text-center mt-4">
-            <a href="patient_dashboard.jsp" class="btn btn-secondary">⬅️ Retour au tableau de bord</a>
-        </div>
-</div>
 
 <footer>
-     &copy; 2025 - CarePath. Tous droits réservés.
-   </footer>
-      
+    &copy; 2025 - CarePath. Tous droits réservés.
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
