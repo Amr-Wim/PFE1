@@ -1,3 +1,5 @@
+
+
 package controllers;
 
 import java.io.IOException;
@@ -24,45 +26,56 @@ public class LoginServlet extends HttpServlet {
         String login = request.getParameter("login");
         String motDePasse = request.getParameter("mot_de_passe");
 
-        UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
-        Utilisateur utilisateur = utilisateurDAO.authentifier(login, motDePasse);
+        try {
+            UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
+            Utilisateur utilisateur = utilisateurDAO.authentifier(login, motDePasse);
 
-        if (utilisateur != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("utilisateur", utilisateur);
+            if (utilisateur != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("utilisateur", utilisateur);
 
-            if ("patient".equals(utilisateur.getRole())) {
-                // Récupérer les infos patient + hospitalisation
-                PatientDAO patientDAO = new PatientDAO();
-                Patient patient = patientDAO.getPatientById(utilisateur.getId());
-                session.setAttribute("patient", patient);
-                
-                HospitalisationDAO hospDAO = new HospitalisationDAO();
-                Hospitalisation hospitalisation = hospDAO.getCurrentByPatientId(patient.getId());
-                session.setAttribute("hospitalisation", hospitalisation);
+                if ("patient".equals(utilisateur.getRole())) {
+                    // Récupérer les infos patient + hospitalisation
+                    PatientDAO patientDAO = new PatientDAO();
+                    HospitalisationDAO hospDAO = new HospitalisationDAO();
+                    
+                    try {
+                        Patient patient = patientDAO.getPatientById(utilisateur.getId());
+                        session.setAttribute("patient", patient);
+                        
+                        Hospitalisation hospitalisation = hospDAO.getCurrentByPatientId(patient.getId());
+                        session.setAttribute("hospitalisation", hospitalisation);
+                    } catch (SQLException e) {
+                        // Log l'erreur mais continue sans les infos patient/hospitalisation
+                        System.err.println("Erreur lors de la récupération des données patient: " + e.getMessage());
+                        request.setAttribute("warningMessage", "Certaines informations ne sont pas disponibles");
+                    }
+                }
+
+                switch (utilisateur.getRole()) {
+                    case "patient":
+                        response.sendRedirect("patient_dashboard.jsp");
+                        break;
+                    case "medecin":
+                        response.sendRedirect("medecin_dashboard.jsp");
+                        break;
+                    case "infirmier":
+                        response.sendRedirect("infirmier_dashboard.jsp");
+                        break;
+                    case "admin":
+                        response.sendRedirect("admin_dashboard.jsp");
+                        break;
+                    default:
+                        response.sendRedirect("login.jsp");
+                }
+            } else {
+                request.setAttribute("errorMessage", "Login ou mot de passe incorrect !");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
             }
-
-        
-
-            switch (utilisateur.getRole()) {
-                case "patient":
-                    response.sendRedirect("patient_dashboard.jsp");
-                    break;
-                case "medecin":
-                    response.sendRedirect("medecin_dashboard.jsp");
-                    break;
-                case "infirmier":
-                    response.sendRedirect("infirmier_dashboard.jsp");
-                    break;
-                case "admin":
-                    response.sendRedirect("admin_dashboard.jsp");
-                    break;
-                default:
-                    response.sendRedirect("login.jsp");
-            
-            }  } else {
-            request.setAttribute("errorMessage", "Login ou mot de passe incorrect !");
+        } catch (Exception e) {  // Changé de SQLException vers Exception pour capturer toutes les erreurs
+            System.err.println("Erreur lors de l'authentification: " + e.getMessage());
+            request.setAttribute("errorMessage", "Une erreur technique est survenue. Veuillez réessayer.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
-    
-}}
+    }
+}
