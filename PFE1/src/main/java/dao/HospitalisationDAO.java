@@ -18,11 +18,13 @@ public class HospitalisationDAO {
 	                "WHERE h.id_patient = ? " +
 	                "ORDER BY h.id_hospitalisation DESC LIMIT 1";
 	    
+	    
 	    try (Connection conn = Database.getConnection();
 	         PreparedStatement stmt = conn.prepareStatement(sql)) {
 	        
 	        stmt.setInt(1, patientId);
 	        ResultSet rs = stmt.executeQuery();
+	        
 	        
 	        if (rs.next()) {
 	            Hospitalisation h = new Hospitalisation();

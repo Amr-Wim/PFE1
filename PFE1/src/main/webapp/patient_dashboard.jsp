@@ -1,206 +1,226 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>CarePath - Mes Informations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - CarePath</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1e3a5f;
-            --secondary-color: #7e0021;
-            --light-bg: #f2f7fb;
+            --main-blue: #1e3a5f;
+            --accent-red: #7e0021;
+            --bg-light: #e0f2fe;
         }
         
         body {
+            background-color: var(--bg-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
-            color: #333;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
+        .dashboard-card {
             background-color: white;
-            border-radius: 15px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-        
-        header {
-            background-color: var(--primary-color);
-            padding: 20px 60px;
-            border-bottom: 4px solid var(--secondary-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            color: white;
-        }
-        
-        .nav-link {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 5px;
-        }
-        
-        .nav-link:hover {
-            background-color: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
-        
-        .info-card {
+            height: 100%;
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 25px;
-            margin-bottom: 30px;
         }
         
-        .info-label {
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--main-blue);
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            color: var(--main-blue);
             font-weight: 600;
-            color: var(--primary-color);
-            min-width: 180px;
-            display: inline-block;
+            margin-bottom: 15px;
         }
         
-        .info-value {
-            color: #555;
-        }
-        
-        .btn-back {
-            border-radius: 8px;
+        .btn-dashboard {
+            background-color: var(--accent-red); /* Changé en rouge */
+            border: none;
             padding: 8px 20px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-        }
-        
-        .btn-back:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        footer {
-            background-color: var(--primary-color);
             color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-top: 40px;
         }
+        
+        .btn-dashboard:hover {
+            background-color: #6a001c; /* Nuance plus foncée pour le hover */
+            transform: translateY(-2px);
+            color: white;
+        }
+        .welcome-message {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        header {
+      background-color: var(--main-blue);
+      padding: 20px 60px;
+      display: flex;
+      align-items: center;
+      border-bottom: 4px solid var(--accent-red);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+        footer {
+      background-color: var(--main-blue);
+      color: #ffffff;
+      text-align: center;
+      padding: 18px 30px;
+      font-size: 14px;
+      border-top: 4px solid var(--accent-red);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
     </style>
 </head>
 <body>
-
-    <!-- Header -->
-    <header>
-        <div class="container-fluid d-flex align-items-center justify-content-between">
-            <!-- Logo et titre -->
-            <div class="d-flex align-items-center gap-3">
-                <img src="image/image2.png" alt="Logo CarePath" style="height: 50px;">
-                <span class="fs-3 fw-bold text-uppercase" style="text-shadow: 0 2px 4px rgba(126, 0, 33, 0.6);">
-                    CarePath
-                </span>
-            </div>
-            
-           <div class="d-flex gap-3">
-    <a class="nav-link text-white" href="patient_dashboard.jsp">
-        <i class="fas fa-tachometer-alt me-1"></i> Tableau de bord
-    </a>
-    <a class="nav-link text-white" href="fiche_patient.jsp">
-        <i class="fas fa-user me-1"></i> Informations
-    </a>
-    <a class="nav-link text-white" href="dossier_medical.jsp">
-        <i class="fas fa-file-medical me-1"></i> Dossier médical
-    </a>
-    <a class="nav-link text-white" href="hospitalisation.jsp">
-        <i class="fas fa-procedures me-1"></i> Hospitalisation
-    </a>
-    <a class="nav-link text-white" href="analyses.jsp">
-        <i class="fas fa-flask me-1"></i> Analyses
-    </a>
+    <!-- Header (identique au dossier médical) -->
+    <header style="background-color: #1e3a5f;">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between py-2">
+                <!-- Logo et titre -->
+                <div class="d-flex align-items-center gap-3">
+                    <img src="image/image2.png" alt="Logo CarePath" style="height: 50px;">
+                    <span class="fs-3 fw-bold text-white text-uppercase" style="letter-spacing: 1px; text-shadow: 0 2px 3px rgba(0,0,0,0.3);">
+                        CarePath
+                    </span>
+                </div>
                 
-                <!-- Bouton Déconnexion -->
-                <form action="Logout" method="post" class="m-0">
-                    <button type="submit" class="btn btn-danger btn-sm">
+                <!-- Menu et infos utilisateur -->
+                <div class="d-flex align-items-center gap-4">
+                    <!-- Navigation principale -->
+                    <nav class="d-flex align-items-center gap-3 me-4">
+                        <a class="nav-link text-white active hover-effect" href="patient_dashboard.jsp">
+                            <i class="fas fa-tachometer-alt me-1"></i>
+                            <span class="d-none d-lg-inline">Tableau de bord</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="fiche_patient.jsp">
+                            <i class="fas fa-user me-1"></i>
+                            <span class="d-none d-lg-inline">Informations</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="dossier_medical.jsp">
+                            <i class="fas fa-file-medical me-1"></i>
+                            <span class="d-none d-lg-inline">Dossier médical</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="hospitalisation.jsp">
+                            <i class="fas fa-procedures me-1"></i>
+                            <span class="d-none d-lg-inline">Hospitalisation</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="analyses.jsp">
+                            <i class="fas fa-flask me-1"></i>
+                            <span class="d-none d-lg-inline">Analyses</span>
+                        </a>
+                    </nav>
+                    
+                   
+                        <!-- Bouton Déconnexion -->
+                        <form action="Logout" method="post" class="m-0">
+                             <button type="submit" class="btn btn-danger btn-sm">
                         <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
-                    </button>
-                </form>
-            </nav>
+                                
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
-<body>
 
- 
-    <div class="container py-5">
-        <h1 class="text-center mb-5">Tableau de Bord Patient</h1>
-        
-        <div class="row g-4">
-            <!-- Informations personnelles -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-user-circle card-icon"></i>
-                        <h3 class="section-title">Informations personnelles</h3>
-                        <p class="card-text">Consultez et mettez à jour vos coordonnées</p>
-                        <a href="fiche_patient.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-edit me-2"></i>Gérer mon profil
-                        </a>
-                    </div>
-                </div>
+    <main class="flex-grow-1 py-5">
+        <div class="container">
+            <!-- Message de bienvenue -->
+            <div class="welcome-message text-center mb-5">
+                <h1 class="mb-3" style="color: var(--main-blue);">
+                    <i class="fas fa-user-circle me-2"></i>Bienvenue, ${utilisateur.prenom}
+                </h1>
+                <p class="lead">Accédez rapidement à toutes les fonctionnalités de votre espace patient</p>
             </div>
             
-            <!-- Dossier médical -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-file-medical card-icon"></i>
-                        <h3 class="section-title">Dossier médical</h3>
-                        <p class="card-text">Accédez à votre historique médical complet</p>
-                        <a href="dossier_medical.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-folder-open me-2"></i>Consulter
-                        </a>
+            <!-- Cartes de fonctionnalités -->
+            <div class="row g-4">
+                <!-- Informations personnelles -->
+                <div class="col-md-6">
+                    <div class="dashboard-card p-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-circle card-icon"></i>
+                            <h3 class="section-title">Informations personnelles</h3>
+                            <p class="card-text">Consultez et mettez à jour vos coordonnées</p>
+                            <a href="fiche_patient.jsp" class="btn btn-dashboard mt-3">
+                                <i class="fas fa-edit me-2"></i>Gérer mon profil
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Hospitalisation -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-procedures card-icon"></i>
-                        <h3 class="section-title">Hospitalisation</h3>
-                        <p class="card-text">Informations sur votre séjour hospitalier</p>
-                        <a href="hospitalisation.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-info-circle me-2"></i>Détails
-                        </a>
+                
+                <!-- Dossier médical -->
+                <div class="col-md-6">
+                    <div class="dashboard-card p-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-medical card-icon"></i>
+                            <h3 class="section-title">Dossier médical</h3>
+                            <p class="card-text">Accédez à votre historique médical complet</p>
+                            <a href="dossier_medical.jsp" class="btn btn-dashboard mt-3">
+                                <i class="fas fa-folder-open me-2"></i>Consulter
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Analyses médicales -->
-            <div class="col-md-6">
-                <div class="card dashboard-card p-4">
-                    <div class="card-body text-center">
-                        <i class="fas fa-flask card-icon"></i>
-                        <h3 class="section-title">Analyses médicales</h3>
-                        <p class="card-text">Date de retrait  de vos analyses</p>
-                        <a href="analyses.jsp" class="btn btn-primary mt-3">
-                            <i class="fas fa-clock me-2"></i>Consulter
-                        </a>
+                
+                <!-- Hospitalisation -->
+                <div class="col-md-6">
+                    <div class="dashboard-card p-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-procedures card-icon"></i>
+                            <h3 class="section-title">Hospitalisation</h3>
+                            <p class="card-text">Informations sur votre séjour hospitalier</p>
+                            <a href="hospitalisation.jsp" class="btn btn-dashboard mt-3">
+                                <i class="fas fa-info-circle me-2"></i>Détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analyses médicales -->
+                <div class="col-md-6">
+                    <div class="dashboard-card p-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-flask card-icon"></i>
+                            <h3 class="section-title">Analyses médicales</h3>
+                            <p class="card-text">Date de retrait de vos analyses</p>
+                            <a href="analyses.jsp" class="btn btn-dashboard mt-3">
+                                <i class="fas fa-clock me-2"></i>Consulter
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-   <footer>
-    &copy; 2025 - CarePath. Tous droits réservés.
-</footer>
-    
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</body>
-</html>
+    <!-- Footer (identique au dossier médical) -->
+    <footer>
+        &copy; 2025 - CarePath. Tous droits réservés.
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

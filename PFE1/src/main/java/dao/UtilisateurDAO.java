@@ -1,5 +1,6 @@
 package dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -70,112 +71,7 @@ public class UtilisateurDAO {
         return existe;
     }
  
-    public boolean ajouterUtilisateur(String nom, String prenom, String email, String login, String motDePasse,
-            String role, String dateNaissance, String adresse, String specialite, String service) {
-Connection conn = null;
-boolean success = false;
-
-try {
-conn = Database.getConnection();
-conn.setAutoCommit(false); // Démarrer une transaction
-
-// 1. Insérer dans la table utilisateur
-String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, login, mot_de_passe, role) VALUES (?, ?, ?, ?, ?, ?)";
-PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
-stmtUser.setString(1, nom);
-stmtUser.setString(2, prenom);
-stmtUser.setString(3, email);
-stmtUser.setString(4, login);
-stmtUser.setString(5, motDePasse);
-stmtUser.setString(6, role);
-
-int affectedRows = stmtUser.executeUpdate();
-
-if (affectedRows > 0) {
-ResultSet generatedKeys = stmtUser.getGeneratedKeys();
-if (generatedKeys.next()) {
-int idUtilisateur = generatedKeys.getInt(1);
-
-// 2. Insérer dans la table spécifique selon le rôle
-switch (role) {
-case "patient":
-    insertPatient(conn, idUtilisateur, dateNaissance, adresse);
-    break;
-case "medecin":
-    insertMedecin(conn, idUtilisateur, specialite);
-    break;
-case "infirmier":
-    insertInfirmier(conn, idUtilisateur, service);
-    break;
-case "admin":
-    insertAdmin(conn, idUtilisateur);
-    break;
-}
-
-conn.commit(); // Valider la transaction
-success = true;
-}
-}
-} catch (SQLException e) {
-// Annuler la transaction en cas d'erreur
-if (conn != null) {
-try {
-conn.rollback();
-} catch (SQLException ex) {
-ex.printStackTrace();
-}
-}
-e.printStackTrace();
-} finally {
-// Restaurer l'autocommit et fermer la connexion
-if (conn != null) {
-try {
-conn.setAutoCommit(true);
-conn.close();
-} catch (SQLException e) {
-e.printStackTrace();
-}
-}
-}
-return success;
-}
-
-// Méthodes privées pour l'insertion spécifique
-private void insertPatient(Connection conn, int id, String dateNaissance, String adresse) throws SQLException {
-String sql = "INSERT INTO patient (id, date_naissance, adresse) VALUES (?, ?, ?)";
-try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-stmt.setInt(1, id);
-stmt.setDate(2, Date.valueOf(dateNaissance));
-stmt.setString(3, adresse);
-stmt.executeUpdate();
-}
-}
-
-private void insertMedecin(Connection conn, int id, String specialite) throws SQLException {
-String sql = "INSERT INTO medecin (id, specialite) VALUES (?, ?)";
-try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-stmt.setInt(1, id);
-stmt.setString(2, specialite);
-stmt.executeUpdate();
-}
-}
-
-private void insertInfirmier(Connection conn, int id, String service) throws SQLException {
-String sql = "INSERT INTO infirmier (id, service) VALUES (?, ?)";
-try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-stmt.setInt(1, id);
-stmt.setString(2, service);
-stmt.executeUpdate();
-}
-}
-
-private void insertAdmin(Connection conn, int id) throws SQLException {
-String sql = "INSERT INTO admin (id) VALUES (?)";
-try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-stmt.setInt(1, id);
-stmt.executeUpdate();
-}
-}
+   
 
 /**
 * Vérifie si un login existe déjà
@@ -237,5 +133,185 @@ return user;
 e.printStackTrace();
 }
 return null;
+}
+
+// Signature modifiée pour inclure sexe
+public boolean ajouterUtilisateur(String nom, String prenom, String email, String cin, String sexe, String login, String motDePasseHash,
+        String dateNaissanceStr, String adresse, 
+        String tailleStr, String poidsStr, String groupeSanguin, String assuranceMedicale, String numeroAssurance) {
+    
+    Connection conn = null;
+    boolean success = false;
+    String roleUtilisateur = "patient";
+
+    try {
+        conn = Database.getConnection();
+        conn.setAutoCommit(false); 
+
+        // Adapter la requête pour inclure la colonne sexe
+        String sqlUser = "INSERT INTO utilisateur (nom, prenom, Date_Naissance, Adresse, cin, email, sexe, Telephone, login, mot_de_passe, Statut, role) " +
+                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Ajout d'un placeholder pour sexe
+
+        try (PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS)) {
+            stmtUser.setString(1, nom);
+            stmtUser.setString(2, prenom);
+
+            if (dateNaissanceStr != null && !dateNaissanceStr.isEmpty()) {
+                stmtUser.setDate(3, Date.valueOf(dateNaissanceStr));
+            } else {
+                stmtUser.setNull(3, java.sql.Types.DATE); 
+            }
+            if (adresse != null && !adresse.isEmpty()) {
+                stmtUser.setString(4, adresse);
+            } else {
+                stmtUser.setNull(4, java.sql.Types.VARCHAR);
+            }
+            
+            if (cin != null && !cin.trim().isEmpty()) {
+                stmtUser.setString(5, cin);
+            } else {
+                stmtUser.setNull(5, java.sql.Types.VARCHAR); 
+            }
+            
+            stmtUser.setString(6, email);
+
+            // Gérer le Sexe
+            if (sexe != null && !sexe.isEmpty()) {
+                stmtUser.setString(7, sexe);
+            } else {
+                stmtUser.setNull(7, java.sql.Types.VARCHAR); // Si la colonne sexe est nullable
+            }
+            
+            stmtUser.setNull(8, java.sql.Types.VARCHAR); // Telephone (non fourni, donc NULL)
+            stmtUser.setString(9, login);
+            stmtUser.setString(10, motDePasseHash);
+            stmtUser.setString(11, "Actif"); // Statut par défaut
+            stmtUser.setString(12, roleUtilisateur);
+
+            int affectedRows = stmtUser.executeUpdate();
+
+            if (affectedRows > 0) {
+                ResultSet generatedKeys = stmtUser.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int idUtilisateur = generatedKeys.getInt(1);
+
+                    insertPatientDetails(conn, idUtilisateur, dateNaissanceStr, adresse, 
+                                      tailleStr, poidsStr, groupeSanguin, assuranceMedicale, numeroAssurance);
+                    
+                    conn.commit(); 
+                    success = true;
+                } else {
+                    conn.rollback();
+                }
+            } else {
+                conn.rollback();
+            }
+        }
+    } catch (SQLException e) {
+        // ... (gestion des erreurs et finally inchangée) ...
+        if (conn != null) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace(); 
+            }
+        }
+        e.printStackTrace(); 
+    } finally {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    return success;
+}
+
+// ... insertPatientDetails reste inchangée ...
+private void insertPatientDetails(Connection conn, int idUtilisateur, String dateNaissanceStr, String adresse,
+                           String tailleStr, String poidsStr, String groupeSanguin, 
+                           String assuranceMedicale, String numeroAssurance) throws SQLException {
+    
+    String sql = "INSERT INTO patient (id, date_naissance, adresse, Taille, Poids, Groupe_Sanguin, Assurance_Medicale, Numero_Assurance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, idUtilisateur);
+
+        if (dateNaissanceStr != null && !dateNaissanceStr.isEmpty()) {
+            stmt.setDate(2, Date.valueOf(dateNaissanceStr));
+        } else {
+            stmt.setNull(2, java.sql.Types.DATE);
+        }
+        
+        if (adresse != null && !adresse.isEmpty()) {
+            stmt.setString(3, adresse);
+        } else {
+            stmt.setNull(3, java.sql.Types.VARCHAR);
+        }
+
+        if (tailleStr != null && !tailleStr.isEmpty()) {
+            try {
+                stmt.setInt(4, Integer.parseInt(tailleStr));
+            } catch (NumberFormatException e) {
+                stmt.setNull(4, java.sql.Types.INTEGER); 
+                System.err.println("Format Taille invalide pour patient ID " + idUtilisateur + ": " + tailleStr + ". Mis à NULL.");
+            }
+        } else {
+            stmt.setNull(4, java.sql.Types.INTEGER);
+        }
+
+        if (poidsStr != null && !poidsStr.isEmpty()) {
+            try {
+                stmt.setBigDecimal(5, new BigDecimal(poidsStr));
+            } catch (NumberFormatException e) {
+                stmt.setNull(5, java.sql.Types.DECIMAL);
+                System.err.println("Format Poids invalide pour patient ID " + idUtilisateur + ": " + poidsStr + ". Mis à NULL.");
+            }
+        } else {
+            stmt.setNull(5, java.sql.Types.DECIMAL);
+        }
+
+        if (groupeSanguin != null && !groupeSanguin.isEmpty()) {
+            stmt.setString(6, groupeSanguin);
+        } else {
+            stmt.setNull(6, java.sql.Types.VARCHAR);
+        }
+
+        if (assuranceMedicale != null && !assuranceMedicale.isEmpty()) {
+            stmt.setString(7, assuranceMedicale);
+        } else {
+            stmt.setNull(7, java.sql.Types.VARCHAR);
+        }
+
+        if (numeroAssurance != null && !numeroAssurance.isEmpty()) {
+            stmt.setString(8, numeroAssurance);
+        } else {
+            stmt.setNull(8, java.sql.Types.VARCHAR);
+        }
+        
+        stmt.executeUpdate();
+    }
+}
+// ... (cinExiste, loginExiste, emailExiste, authentifier, getUtilisateurParLogin) ...
+
+
+
+public boolean cinExiste(String cin) {
+    if (cin == null || cin.trim().isEmpty()) {
+        return false; 
+    }
+    String sql = "SELECT COUNT(*) FROM utilisateur WHERE cin = ?";
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, cin);
+        try(ResultSet rs = stmt.executeQuery()){
+            return rs.next() && rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return true;
+    }
 }
 }

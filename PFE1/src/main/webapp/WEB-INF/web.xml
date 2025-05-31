@@ -69,4 +69,31 @@
     <servlet-name>HospitalisationServlet</servlet-name>
     <url-pattern>/HospitalisationServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AfficherDossierMedicalServlet</display-name>
+    <servlet-name>AfficherDossierMedicalServlet</servlet-name>
+    <servlet-class>controllers.AfficherDossierMedicalServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AfficherDossierMedicalServlet</servlet-name>
+    <url-pattern>/AfficherDossierMedicalServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DossierMedicalServlet</display-name>
+    <servlet-name>DossierMedicalServlet</servlet-name>
+    <servlet-class>controllers.DossierMedicalServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DossierMedicalServlet</servlet-name>
+    <url-pattern>/DossierMedicalServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>PlanifierExamen</display-name>
+    <servlet-name>PlanifierExamen</servlet-name>
+    <servlet-class>controllers.PlanifierExamen</servlet-class>
+  </servlet>
+  
 </web-app>

@@ -12,84 +12,99 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1e3a5f;
-            --secondary-color: #7e0021;
-            --light-bg: #f2f7fb;
+            --main-blue: #1e3a5f;
+            --accent-red: #7e0021;
+            --bg-light: #e0f2fe;
         }
         
         body {
+            background-color: var(--bg-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
-            color: #333;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
+        .medical-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 900px;
             margin: 30px auto;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
         }
         
-        header {
-            background-color: var(--primary-color);
-            padding: 20px 60px;
-            border-bottom: 4px solid var(--secondary-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            color: white;
-        }
-        
-        .nav-link {
-            transition: all 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 5px;
-        }
-        
-        .nav-link:hover {
-            background-color: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
-        
-        .info-card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 25px;
+        .section-title {
+            text-align: center;
+            color: var(--accent-red);
             margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
         }
         
         .info-label {
             font-weight: 600;
-            color: var(--primary-color);
-            min-width: 180px;
+            color: var(--main-blue);
             display: inline-block;
+            min-width: 200px;
         }
         
         .info-value {
-            color: #555;
+            color: #1e3a5f;
+        }
+        
+        .hospitalisation-alert {
+            border-left: 5px solid;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
         }
         
         .btn-back {
-            border-radius: 8px;
+            background-color: var(--main-blue);
+            color: white;
+            border: none;
             padding: 8px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
             transition: all 0.3s ease;
         }
         
         .btn-back:hover {
+            background-color: #16314f;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-top: 40px;
-        }
+         header {
+      background-color: var(--main-blue);
+      padding: 20px 60px;
+      display: flex;
+      align-items: center;
+      border-bottom: 4px solid var(--accent-red);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+     footer {
+      background-color: var(--main-blue);
+      color: #ffffff;
+      text-align: center;
+      padding: 18px 30px;
+      font-size: 14px;
+      border-top: 4px solid var(--accent-red);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+            
     </style>
 </head>
 <body>
@@ -132,34 +147,71 @@
         </div>
     </header>
 
-<div class="container mt-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
-            <h3><i class="fas fa-procedures me-2"></i>Informations d'hospitalisation</h3>
-        </div>
-        <div class="card-body">
-            <c:if test="${not empty hospitalisation}">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <p><strong>Hôpital :</strong> ${hospitalisation.nomHopital}</p>
-                        <p><strong>Service :</strong> ${hospitalisation.service}</p>
-                        <p><strong>Chambre :</strong> ${hospitalisation.chambre}</p>
+ <main>
+        <div class="medical-section">
+            <h2 class="section-title">
+                <i class="fas fa-procedures me-2"></i>
+                Informations d'Hospitalisation
+            </h2>
+            
+            <c:choose>
+                <c:when test="${not empty hospitalisation}">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-hospital me-2"></i>Hôpital :</span>
+                            <span class="info-value">${hospitalisation.nomHopital}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-clinic-medical me-2"></i>Service :</span>
+                            <span class="info-value">${hospitalisation.service}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-bed me-2"></i>Chambre :</span>
+                            <span class="info-value">${hospitalisation.chambre}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-user-md me-2"></i>Médecin :</span>
+                            <span class="info-value">Dr. ${hospitalisation.medecin.nom}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-calendar-check me-2"></i>Date admission :</span>
+                            <span class="info-value">
+                                <fmt:formatDate value="${hospitalisation.dateAdmission}" pattern="dd/MM/yyyy"/>
+                            </span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-clock me-2"></i>Durée prévue :</span>
+                            <span class="info-value">${hospitalisation.duree}</span>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Médecin responsable :</strong> Dr. ${hospitalisation.medecin.nom}</p>
-                        <p><strong>Date d'admission :</strong> 
-                           <fmt:formatDate value="${hospitalisation.dateAdmission}" pattern="dd/MM/yyyy"/></p>
-                        <p><strong>Durée prévue :</strong> ${hospitalisation.duree}</p>
+                    
+                    <div class="hospitalisation-alert alert-${hospitalisation.etat == 'Critique' ? 'danger' : 'info'}">
+                        <h4><i class="fas fa-info-circle me-2"></i>État du patient</h4>
+                        <p><strong>État :</strong> ${hospitalisation.etat}</p>
+                        <p><strong>Motif :</strong> ${hospitalisation.motif}</p>
                     </div>
-                </div>
-                <div class="alert alert-${hospitalisation.etat == 'Critique' ? 'danger' : 'info'}">
-                    <strong>État :</strong> ${hospitalisation.etat}<br>
-                    <strong>Motif :</strong> ${hospitalisation.motif}
-                </div>
-            </c:if>
+                </c:when>
+                <c:otherwise>
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucune hospitalisation en cours
+                    </div>
+                </c:otherwise>
+            </c:choose>
+            
+            <div class="text-center">
+                <a href="patient_dashboard.jsp" class="btn btn-back">
+                    <i class="fas fa-arrow-left me-2"></i> Retour au tableau de bord
+                </a>
+            </div>
         </div>
-    </div>
-</div>
+    </main>
+
 
 
 <footer>

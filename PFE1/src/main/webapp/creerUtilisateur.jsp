@@ -40,178 +40,186 @@
         </div>
     </div>
 </header>
-
+ 
     <div class="container mt-5">
-    <h2 > Création d’un compte utilisateur</h2>
-    
-    <% if (request.getAttribute("errorMessage") != null) { %>
-    <div class="alert alert-danger text-center mt-3">
-        <%= request.getAttribute("errorMessage") %>
-    </div>
-<% } %>
-<% if (request.getAttribute("successMessage") != null) { %>
-<div class="alert alert-success text-center mt-3">
-    <%= request.getAttribute("successMessage") %>
-</div>
-<% } %>
-    
+    <h2>Création d’un compte Patient</h2>
+
+    <c:if test="${not empty requestScope.error}">
+        <div class="alert alert-danger text-center mt-3 alert-dismissible fade show" role="alert">
+            ${requestScope.error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+    <c:if test="${not empty requestScope.successMessage}">
+        <div class="alert alert-success text-center mt-3 alert-dismissible fade show" role="alert">
+            ${requestScope.successMessage}
+             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
 
     <div class="card shadow-sm">
-        <div class="card">
-    <div class="card-header bg-logo">
-        Formulaire de création de compte
-    </div>
+        <div class="card-header bg-logo">
+            Formulaire de création de compte Patient
+        </div>
         <div class="card-body">
-        
-<body>
-<div class="container">
-    <div class="form-container">
-        <h2 class="form-title">Création de compte</h2>
-        
-        <c:if test="${not empty error}">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                ${error}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        </c:if>
-        
-        <form method="POST" action="${pageContext.request.contextPath}/CreerUser">
-            <!-- Informations de base -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="nom" class="form-label">Nom *</label>
-                    <input type="text" class="form-control" id="nom" name="nom" required>
+            <form method="POST" action="${pageContext.request.contextPath}/CreerUser">
+                <input type="hidden" name="role" value="patient">
+
+                <!-- Informations de base Utilisateur -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nom" class="form-label">Nom *</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="prenom" class="form-label">Prénom *</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="prenom" class="form-label">Prénom *</label>
-                    <input type="text" class="form-control" id="prenom" name="prenom" required>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cin" class="form-label">CIN</label> <!-- Champ CIN ajouté -->
+                        <input type="text" class="form-control" id="cin" name="cin" maxlength="20">
+                    </div>
                 </div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="email" class="form-label">Email *</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="login" class="form-label">Nom d'utilisateur *</label>
-                    <input type="text" class="form-control" id="login" name="login" required>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="login" class="form-label">Nom d'utilisateur *</label>
+                        <input type="text" class="form-control" id="login" name="login" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mdp" class="form-label">Mot de passe *</label>
+                        <input type="password" class="form-control" id="mdp" name="mdp" required>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="mdp" class="form-label">Mot de passe *</label>
-                    <input type="password" class="form-control" id="mdp" name="mdp" required>
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="role" class="form-label">Rôle *</label>
-                <select class="form-select" id="role" name="role" required>
-                    <option value="">-- Sélectionner un rôle --</option>
-                    <option value="patient">Patient</option>
-                    <option value="medecin">Médecin</option>
-                    <option value="infirmier">Infirmier</option>
-                    <option value="admin">Administrateur</option>
-                </select>
-            </div>
-            
-            <!-- Champs spécifiques selon le rôle -->
-            <div id="champ-medecin" class="role-specific" style="display: none;">
-                <h5>Informations Médecin</h5>
-                <div class="mb-3">
-                    <label for="specialite" class="form-label">Spécialité *</label>
-                    <select class="form-select" id="specialite" name="specialite">
-                        <option value="">-- Sélectionner une spécialité --</option>
-                        <option value="Cardiologie">Cardiologie</option>
-                        <option value="Pédiatrie">Pédiatrie</option>
-                        <option value="Gynécologie">Gynécologie</option>
-                        <option value="Chirurgie">Chirurgie</option>
-                        <option value="Neurologie">Neurologie</option>
-                        <option value="Dermatologie">Dermatologie</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div id="champ-patient" class="role-specific" style="display: none;">
-                <h5>Informations Patient</h5>
+
+                <!-- Informations Spécifiques Patient -->
+                <h5>Informations Complémentaires Patient</h5>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="date_naissance" class="form-label">Date de naissance *</label>
-                        <input type="date" class="form-control" id="date_naissance" name="date_naissance">
+                        <input type="date" class="form-control" id="date_naissance" name="date_naissance" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="taille" class="form-label">Taille (cm)</label>
+                        <input type="number" class="form-control" id="taille" name="taille" min="0">
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="adresse" class="form-label">Adresse *</label>
-                    <textarea class="form-control" id="adresse" name="adresse" rows="3"></textarea>
-                </div>
-            </div>
-            
-            <div id="champ-infirmier" class="role-specific" style="display: none;">
-                <h5>Informations Infirmier</h5>
-                <div class="mb-3">
-                    <label for="service" class="form-label">Service *</label>
-                    <select class="form-select" id="service" name="service">
-                        <option value="">-- Sélectionner un service --</option>
-                        <option value="Urgences">Urgences</option>
-                        <option value="Pédiatrie">Pédiatrie</option>
-                        <option value="Réanimation">Réanimation</option>
-                        <option value="Oncologie">Oncologie</option>
-                        <option value="Bloc opératoire">Bloc opératoire</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg">Créer le compte</button>
-            </div>
-        </form>
+               <div class="col-md-4">
+    <label class="form-label">Sexe</label>
+    <div class="d-flex gap-3"> <!-- Alignement horizontal -->
+        <!-- Option Masculin -->
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexe" id="sexe_masculin" value="Masculin">
+            <label class="form-check-label" for="sexe_masculin">Masculin</label>
+        </div>
+        
+        <!-- Option Féminin -->
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexe" id="sexe_feminin" value="Féminin">
+            <label class="form-check-label" for="sexe_feminin">Féminin</label>
+        </div>
     </div>
 </div>
+                <div class="mb-3">
+                    <label for="adresse" class="form-label">Adresse *</label>
+                    <textarea class="form-control" id="adresse" name="adresse" rows="3" required></textarea>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="poids" class="form-label">Poids (kg)</label>
+                        <input type="number" step="0.01" class="form-control" id="poids" name="poids" min="0">
+                    </div>
+                    <div class="col-md-6">
+    <label for="groupe_sanguin" class="form-label">Groupe Sanguin</label>
+    <select class="form-control" id="groupe_sanguin" name="groupe_sanguin">
+        <option value="">-- Sélectionnez votre groupe --</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+        <option value="Inconnu">Inconnu</option>
+    </select>
+</div>
+                </div>
+               <div class="mb-3">
+    <label for="assurance_medicale" class="form-label">Assurance Médicale</label>
+    <select class="form-control" id="assurance_medicale" name="assurance_medicale">
+        <option value="">-- Sélectionnez une assurance --</option>
+        
+        <!-- Assurances Publiques -->
+        <optgroup label="Assurances Publiques">
+            <option value="CNSS">CNSS (Caisse Nationale de Sécurité Sociale)</option>
+            <option value="CNOPS">CNOPS (Caisse Nationale des Organismes de Prévoyance Sociale)</option>
+        </optgroup>
+        
+        <!-- Assurances Privées -->
+        <optgroup label="Assurances Privées">
+            <option value="AXA">AXA Assurance Maroc</option>
+            <option value="RMA">RMA Watanya</option>
+            <option value="Sanad">Sanad (Groupe CDG)</option>
+            <option value="AtlantaSanad">AtlantaSanad</option>
+            <option value="Allianz">Allianz Maroc</option>
+            <option value="Sanlam">Sanlam Maroc (ex-Saham)</option>
+            <option value="Wafa">Wafa Assurance</option>
+            <option value="Takafoul">Mutuelle Takafoul (Islamique)</option>
+            <option value="Zurich">Zurich Maroc</option>
+            <option value="MAMDA">MAMDA-MCMA</option>
+            <option value="La Marocaine Vie">La Marocaine Vie</option>
+        </optgroup>
+        
+        <!-- Mutuelles & Spécialisées -->
+        <optgroup label="Mutuelles et Spécialisées">
+            <option value="FAR">FAR (Risques professionnels)</option>
+            <option value="MGPAP">MGPAP (Fonctionnaires)</option>
+        </optgroup>
+        
+        <!-- Internationales -->
+        <optgroup label="Assurances Internationales">
+            <option value="Cigna">Cigna Global</option>
+            <option value="Allianz International">Allianz Worldwide Care</option>
+            <option value="Aetna">Aetna International</option>
+        </optgroup>
+        
+        <!-- Autre option -->
+        <option value="autre">Autre (précisez)</option>
+    </select>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Gestion de l'affichage des champs spécifiques
-    document.getElementById('role').addEventListener('change', function() {
-        // Masquer tous les champs spécifiques
-        document.querySelectorAll('.role-specific').forEach(el => {
-            el.style.display = 'none';
-            // Rendre les champs non obligatoires temporairement
-            el.querySelectorAll('input, select, textarea').forEach(field => {
-                field.required = false;
-            });
-        });
-        
-        // Afficher les champs correspondants au rôle sélectionné
-        const role = this.value;
-        if (role === 'medecin') {
-            document.getElementById('champ-medecin').style.display = 'block';
-            document.getElementById('specialite').required = true;
-        } else if (role === 'patient') {
-            document.getElementById('champ-patient').style.display = 'block';
-            document.getElementById('date_naissance').required = true;
-            document.getElementById('adresse').required = true;
-        } else if (role === 'infirmier') {
-            document.getElementById('champ-infirmier').style.display = 'block';
-            document.getElementById('service').required = true;
-        }
-    });
-    
-    // Validation avant soumission
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const role = document.getElementById('role').value;
-        let valid = true;
-        
-        // Validation des champs spécifiques
-        if (role === 'medecin' && !document.getElementById('specialite').value) {
-            alert('Veuillez sélectionner une spécialité');
-            valid = false;
-        } 
-        // Ajouter des validations similaires pour patient et infirmier
-        
-        if (!valid) {
-            e.preventDefault();
-        }
+<!-- Champ caché pour "Autre" -->
+<div class="mb-3" id="autre_assurance_container" style="display: none;">
+    <label for="autre_assurance" class="form-label">Précisez votre assurance</label>
+    <input type="text" class="form-control" id="autre_assurance" name="autre_assurance">
+</div>
+                <div class="mb-3">
+                    <label for="numero_assurance" class="form-label">Numéro d'Assurance</label>
+                    <input type="text" class="form-control" id="numero_assurance" name="numero_assurance" maxlength="50">
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Créer le compte Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    <script>
+    document.getElementById('assurance_medicale').addEventListener('change', function() {
+        const autreContainer = document.getElementById('autre_assurance_container');
+        autreContainer.style.display = (this.value === 'autre') ? 'block' : 'none';
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

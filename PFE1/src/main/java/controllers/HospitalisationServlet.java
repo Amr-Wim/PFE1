@@ -18,30 +18,25 @@ import dao.MedecinDAO;
 
 @WebServlet("/patient/hospitalisation")
 public class HospitalisationServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
-        try {
-            HttpSession session = request.getSession();
-            Patient patient = (Patient) session.getAttribute("patient");
-            
-            if (patient != null) {
-                HospitalisationDAO hospDAO = new HospitalisationDAO();
-                Hospitalisation hosp = hospDAO.getCurrentByPatientId(patient.getId());
-                
-                if (hosp != null) {
-                    MedecinDAO medecinDAO = new MedecinDAO();
-                    Medecin medecin = medecinDAO.getById(hosp.getIdMedecin());
-                    hosp.setMedecin(medecin);
-                }
-                
-                request.setAttribute("hospitalisation", hosp);
-            }
-            
-            request.getRequestDispatcher("/hospitalisation.jsp").forward(request, response);
-            
-        } catch (SQLException e) {
-            throw new ServletException("Erreur de base de données", e);
-        }
-    }
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
+	    
+	    HttpSession session = request.getSession();
+	    // Récupérer directement depuis la session plutôt que de re-quérir la BD
+	    Hospitalisation hosp = (Hospitalisation) session.getAttribute("hospitalisation");
+	    
+	    if (hosp != null && hosp.getIdMedecin() > 0) {
+	        try {
+	            MedecinDAO medecinDAO = new MedecinDAO();
+	            Medecin medecin = medecinDAO.getById(hosp.getIdMedecin());
+	            hosp.setMedecin(medecin);
+	        } catch (SQLException e) {
+	            // Logger l'erreur mais continuer sans les infos du médecin
+	            System.err.println("Erreur récupération médecin: " + e.getMessage());
+	        }
+	    }
+	    
+	    // Transférer vers la JSP
+	    request.getRequestDispatcher("/hospitalisation.jsp").forward(request, response);
+	}
 }

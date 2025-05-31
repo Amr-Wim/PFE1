@@ -9,21 +9,28 @@ import util.Database;
 public class MedecinDAO {
 
     // Récupérer un médecin par son ID
-    public Medecin getById(int id) throws SQLException {
-        String sql = "SELECT u.*, m.specialite FROM utilisateur u JOIN medecin m ON u.id = m.id WHERE u.id = ?";
-        
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                return mapMedecin(rs);
-            }
-        }
-        return null;
-    }
+	public Medecin getById(int id) throws SQLException {
+	    String sql = "SELECT m.*, u.nom, u.prenom FROM medecin m " +
+	                "JOIN utilisateur u ON m.ID_Medecin = u.id " +
+	                "WHERE m.ID_Medecin = ?";
+	    
+	    try (Connection conn = Database.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        
+	        stmt.setInt(1, id);
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            Medecin medecin = new Medecin();
+	            medecin.setId(rs.getInt("ID_Medecin"));
+	            medecin.setSpecialite(rs.getString("specialite"));
+	            medecin.setNom(rs.getString("nom"));
+	            medecin.setPrenom(rs.getString("prenom"));
+	            return medecin;
+	        }
+	        return null;
+	    }
+	}
 
     // Récupérer tous les médecins
     public List<Medecin> getAll() throws SQLException {

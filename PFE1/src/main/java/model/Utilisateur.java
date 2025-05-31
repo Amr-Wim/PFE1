@@ -6,7 +6,20 @@ public class Utilisateur {
     private String nom;
     private String prenom;
     private String email;
-    private String login;
+    private String sexe; 
+    public Utilisateur(int id, String nom, String prenom, String email, String sexe, String login, String motDePasse,
+			String role) {
+		super();
+		this.id = id;
+		this.nom = nom;
+		this.prenom = prenom;
+		this.email = email;
+		this.sexe = sexe;
+		this.login = login;
+		this.motDePasse = motDePasse;
+		this.role = role;
+	}
+	private String login;
     private String motDePasse;
     private String role;
 
@@ -23,8 +36,18 @@ public class Utilisateur {
         this.motDePasse = motDePasse;
         this.role = role;
     }
+    
+    
 
-    // Getters et Setters
+    public String getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(String sexe) {
+		this.sexe = sexe;
+	}
+
+	// Getters et Setters
     public int getId() {
         return id;
     }
