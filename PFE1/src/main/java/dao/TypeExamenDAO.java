@@ -1,7 +1,7 @@
 package dao;
 
 import model.TypeExamen;
-import util.Database; // Assurez-vous que le chemin est correct
+import util.Database; 
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

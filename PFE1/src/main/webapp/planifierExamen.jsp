@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> <%-- Ajout de la taglib fmt --%>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,7 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    :root { /* Styles CSS comme avant */
+    :root { 
       --main-blue: #1e3a5f; --accent-red: #7e0021; --bg-light: #e0f2fe;
     }
     body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
@@ -28,16 +29,45 @@
     .btn-primary:hover { background-color: #162a42; border-color: #162a42; }
     .btn-outline-danger { font-size: 0.8em; padding: 0.2em 0.5em;}
 
-    /* Styles pour la liste des examens sélectionnés */
-    #selectedExamensList .list-group-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 1rem;
-    }
-    #examensDisponiblesSelect {
-        min-height: 100px; /* Pour qu'il soit visible même sans options */
-    }
+   
+#selectedExamensList .list-group-item {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid rgba(0,0,0,.125);
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.remove-examen-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+#selectedExamensList {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border-radius: 0.25rem;
+}
+
+#selectedExamensList .list-group-item {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid rgba(0,0,0,.125);
+    margin-bottom: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#selectedExamensList .list-group-item div {
+    flex-grow: 1;
+}
+
+#selectedExamensList .btn-outline-danger {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
   </style>
 </head>
 <body>
@@ -61,25 +91,25 @@
 
       <c:if test="${not empty requestScope.error}">
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              ${requestScope.error}
+              <i class="fas fa-exclamation-triangle me-2"></i>${requestScope.error}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
       </c:if>
       <c:if test="${not empty requestScope.successMessage}">
           <div class="alert alert-success alert-dismissible fade show" role="alert">
-              ${requestScope.successMessage}
+              <i class="fas fa-check-circle me-2"></i>${requestScope.successMessage}
                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
       </c:if>
 
-      <form id="demandeExamenForm" method="post" action="${pageContext.request.contextPath}/PlanifierExamen"> <%-- L'action pointe vers votre servlet --%>
+      <form id="demandeExamenForm" method="post" action="${pageContext.request.contextPath}/PlanifierExamen1">
         
         <div class="mb-3">
           <label for="idPatient" class="form-label">Patient *</label>
           <select class="form-select" id="idPatient" name="idPatient" required>
             <option value="">-- Sélectionner un patient --</option>
             <c:forEach var="patient" items="${patients}">
-                <option value="${patient.id}">${patient.nom} ${patient.prenom} (ID: ${patient.id})</option>
+                <option value="${patient.id}" ${patient.id == param.idPatient ? 'selected' : ''}>${patient.nom} ${patient.prenom} (ID: ${patient.id})</option>
             </c:forEach>
           </select>
         </div>
@@ -99,7 +129,7 @@
             </div>
             <div class="col-md-5">
                 <label for="examensDisponiblesSelect" class="form-label">Examens disponibles</label>
-                <select class="form-select" id="examensDisponiblesSelect">
+                <select class="form-select" id="examensDisponiblesSelect" disabled>
                     <option value="">-- Sélectionner un type d'abord --</option>
                 </select>
             </div>
@@ -115,13 +145,12 @@
             </ul>
         </div>
         
-        <%-- Champ caché pour stocker les IDs des examens sélectionnés pour la soumission --%>
         <input type="hidden" id="selectedExamsInput" name="selectedExams" value="">
 
         <hr>
         <div class="mb-3">
           <label for="notesMedecin" class="form-label">Notes / Indications Générales</label>
-          <textarea class="form-control" id="notesMedecin" name="notesMedecin" rows="3"></textarea>
+          <textarea class="form-control" id="notesMedecin" name="notesMedecin" rows="3">${param.notesMedecin}</textarea>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mt-3">Enregistrer les Demandes</button>
@@ -130,142 +159,168 @@
   </main>
 
   <footer>
-    © <jsp:useBean id="now" class="java.util.Date" /><jsp:setProperty name="now" property="time" value="${now.time}" /> <fmt:formatDate value="${now}" pattern="yyyy" /> - CarePath. Tous droits réservés.
-    <%-- Pour utiliser fmt:formatDate, il faut la taglib: <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> --%>
-    <%-- Solution plus simple sans fmt: --%>
-    <script>document.write(new Date().getFullYear());</script> - CarePath. Tous droits réservés.
+    © <jsp:useBean id="now" class="java.util.Date" /><fmt:formatDate value="${now}" pattern="yyyy" /> - CarePath. Tous droits réservés.
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const typeExamenSelect = document.getElementById('typeExamenSelect');
-        const examensDisponiblesSelect = document.getElementById('examensDisponiblesSelect');
-        const btnAjouterExamen = document.getElementById('btnAjouterExamen');
-        const selectedExamensList = document.getElementById('selectedExamensList');
-        const aucunExamenSelectionneMsg = document.getElementById('aucunExamenSelectionneMsg');
-        const selectedExamsInput = document.getElementById('selectedExamsInput');
+document.addEventListener('DOMContentLoaded', function () {
+    const typeExamenSelect = document.getElementById('typeExamenSelect');
+    const examensDisponiblesSelect = document.getElementById('examensDisponiblesSelect');
+    const btnAjouterExamen = document.getElementById('btnAjouterExamen');
+    const selectedExamensList = document.getElementById('selectedExamensList');
+    const aucunExamenSelectionneMsg = document.getElementById('aucunExamenSelectionneMsg');
+    const selectedExamsInput = document.getElementById('selectedExamsInput');
+    const demandeExamenForm = document.getElementById('demandeExamenForm');
 
-        let examensDemandes = []; // Tableau pour stocker les objets examens {id, nom, typeNom}
+    let examensDemandes = [];
 
-        // Charger les examens spécifiques quand un type est sélectionné
-        typeExamenSelect.addEventListener('change', function () {
-            const typeId = this.value;
-            examensDisponiblesSelect.innerHTML = '<option value="">Chargement...</option>';
-            examensDisponiblesSelect.disabled = true;
+    // Style dynamique pour la liste des examens
+    selectedExamensList.style.maxHeight = '200px';
+    selectedExamensList.style.overflowY = 'auto';
+    selectedExamensList.style.marginTop = '10px';
 
-            if (typeId) {
-                fetch('${pageContext.request.contextPath}/PlanifierExamen?action=getExamsByType&typeId=' + typeId)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Erreur réseau: ' + response.statusText);
-                        return response.json();
-                    })
-                    .then(data => {
-                        examensDisponiblesSelect.innerHTML = '<option value="">-- Sélectionner un examen --</option>';
-                        if (data && data.length > 0) {
-                            data.forEach(examen => {
-                                const option = document.createElement('option');
-                                option.value = examen.id; // L'ID de l'examen
-                                let infoText = examen.nomExamen; // nomExamen de l'objet Examen.java
-                                // Assurez-vous que votre objet Examen retourné par le servlet contient bien ces champs
-                                if (examen.doitEtreAJeun) { // `doitEtreAJeun` doit être un champ booléen dans l'objet Examen
-                                    infoText += " (À jeun)";
-                                }
-                                // `dureePreparationResultatsHeures` doit être un champ dans l'objet Examen
-                                if (examen.dureePreparationResultatsHeures != null && examen.dureePreparationResultatsHeures > 0) {
-                                    infoText += " [Résultats en ~" + examen.dureePreparationResultatsHeures + "h]";
-                                } else if (examen.dureePreparationResultatsHeures == null) {
-                                    // infoText += " [Durée résultats non spécifiée]"; // Optionnel
-                                }
-                                option.textContent = infoText;
-                                examensDisponiblesSelect.appendChild(option);
-                            });
-                            examensDisponiblesSelect.disabled = false;
-                        } else {
-                             examensDisponiblesSelect.innerHTML = '<option value="">-- Aucun examen pour ce type --</option>';
-                             examensDisponiblesSelect.disabled = true;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur chargement examens:', error);
-                        examensDisponiblesSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+    typeExamenSelect.addEventListener('change', function () {
+        const typeId = this.value;
+        examensDisponiblesSelect.innerHTML = '<option value="">Chargement...</option>';
+        examensDisponiblesSelect.disabled = true;
+
+        if (typeId) {
+            fetch('${pageContext.request.contextPath}/PlanifierExamen1?action=getExamsByType&typeId=' + typeId)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { 
+                            throw new Error(err.error || 'Erreur réseau: ' + response.statusText); 
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    examensDisponiblesSelect.innerHTML = '<option value="">-- Sélectionner un examen --</option>';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(examen => {
+                            const option = document.createElement('option');
+                            option.value = examen.id;
+                            
+                            let infoText = examen.nomExamen;
+                            if (examen.doitEtreAJeun) { 
+                                infoText += " (À jeun)";
+                            }
+                            if (examen.dureePreparationResultatsHeures != null && examen.dureePreparationResultatsHeures > 0) {
+                                infoText += " [Résultats en ~" + examen.dureePreparationResultatsHeures + "h]";
+                            }
+                            
+                            option.textContent = infoText;
+                            examensDisponiblesSelect.appendChild(option);
+                        });
+                        examensDisponiblesSelect.disabled = false;
+                    } else {
+                        examensDisponiblesSelect.innerHTML = '<option value="">-- Aucun examen pour ce type --</option>';
                         examensDisponiblesSelect.disabled = true;
-                    });
-            } else {
-                examensDisponiblesSelect.innerHTML = '<option value="">-- Sélectionner un type d''abord --</option>';
-                examensDisponiblesSelect.disabled = true;
-            }
-        });
-
-        // Ajouter un examen à la liste des examens demandés
-        btnAjouterExamen.addEventListener('click', function () {
-            const selectedOption = examensDisponiblesSelect.options[examensDisponiblesSelect.selectedIndex];
-            if (selectedOption && selectedOption.value !== "") {
-                const examenId = selectedOption.value;
-                const examenNom = selectedOption.textContent; // Le texte complet de l'option
-                const typeNom = typeExamenSelect.options[typeExamenSelect.selectedIndex].text;
-
-                // Vérifier si l'examen n'est pas déjà dans la liste
-                if (!examensDemandes.find(ex => ex.id === examenId)) {
-                    examensDemandes.push({ id: examenId, nom: examenNom, typeNom: typeNom });
-                    mettreAJourListeExamensDemandes();
-                } else {
-                    alert("Cet examen a déjà été ajouté.");
-                }
-            } else {
-                alert("Veuillez sélectionner un examen spécifique à ajouter.");
-            }
-        });
-
-        // Mettre à jour l'affichage de la liste des examens demandés
-        function mettreAJourListeExamensDemandes() {
-            selectedExamensList.innerHTML = ''; // Vider la liste
-            const idsPourSoumission = [];
-
-            if (examensDemandes.length === 0) {
-                selectedExamensList.appendChild(aucunExamenSelectionneMsg);
-                aucunExamenSelectionneMsg.style.display = 'list-item';
-            } else {
-                aucunExamenSelectionneMsg.style.display = 'none';
-                examensDemandes.forEach((examen, index) => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'list-group-item';
-                    listItem.innerHTML = `
-                        <span><strong>${examen.typeNom}:</strong> ${examen.nom}</span>
-                        <button type="button" class="btn btn-outline-danger btn-sm float-end remove-examen-btn" data-index="${index}">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    selectedExamensList.appendChild(listItem);
-                    idsPourSoumission.push(examen.id);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur chargement examens:', error);
+                    examensDisponiblesSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+                    examensDisponiblesSelect.disabled = true;
+                    
+                    // Affichage temporaire de l'erreur
+                    const errorAlert = document.createElement('div');
+                    errorAlert.className = 'alert alert-danger mt-2';
+                    errorAlert.textContent = 'Erreur lors du chargement des examens';
+                    examensDisponiblesSelect.insertAdjacentElement('afterend', errorAlert);
+                    setTimeout(() => errorAlert.remove(), 5000);
                 });
-            }
-            selectedExamsInput.value = idsPourSoumission.join(','); // Mettre à jour le champ caché
+        } else {
+            examensDisponiblesSelect.innerHTML = '<option value="">-- Sélectionner un type d\'abord --</option>';
+            examensDisponiblesSelect.disabled = true;
         }
+    });
 
-        // Gérer la suppression d'un examen de la liste des demandés
-        selectedExamensList.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-examen-btn') || e.target.closest('.remove-examen-btn')) {
-                const button = e.target.closest('.remove-examen-btn');
-                const indexToRemove = parseInt(button.dataset.index);
-                examensDemandes.splice(indexToRemove, 1); // Supprimer l'élément du tableau
-                mettreAJourListeExamensDemandes(); // Réafficher la liste
+    btnAjouterExamen.addEventListener('click', function () {
+        const selectedOption = examensDisponiblesSelect.options[examensDisponiblesSelect.selectedIndex];
+        if (selectedOption && selectedOption.value !== "") {
+            const examenId = selectedOption.value;
+            const examenNom = selectedOption.textContent; 
+            const typeNom = typeExamenSelect.options[typeExamenSelect.selectedIndex].text;
+
+            if (!examensDemandes.find(ex => ex.id === examenId)) {
+                examensDemandes.push({ 
+                    id: examenId, 
+                    nom: examenNom, 
+                    typeNom: typeNom 
+                });
+                mettreAJourListeExamensDemandes();
+            } else {
+                alert("Cet examen a déjà été ajouté.");
             }
-        });
-        
-        // Mettre à jour affichage initial
-        mettreAJourListeExamensDemandes();
+        } else {
+            alert("Veuillez sélectionner un examen spécifique à ajouter.");
+        }
+    });
 
-        // Validation avant soumission
-        document.getElementById('demandeExamenForm').addEventListener('submit', function(event){
+    function mettreAJourListeExamensDemandes() {
+        selectedExamensList.innerHTML = ''; 
+        const idsPourSoumission = [];
+
+        if (examensDemandes.length === 0) {
+            if(aucunExamenSelectionneMsg) {
+               selectedExamensList.appendChild(aucunExamenSelectionneMsg);
+               aucunExamenSelectionneMsg.style.display = 'list-item';
+            }
+        } else {
+            if(aucunExamenSelectionneMsg) aucunExamenSelectionneMsg.style.display = 'none';
+            
+            examensDemandes.forEach((examen, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                
+                // Partie texte avec type et nom de l'examen
+                const textDiv = document.createElement('div');
+                textDiv.innerHTML = `<strong>${examen.typeNom}:</strong> ${examen.nom}`;
+                
+                // Bouton de suppression
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'btn btn-outline-danger btn-sm';
+                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+                deleteBtn.setAttribute('data-index', index);
+                deleteBtn.setAttribute('aria-label', 'Supprimer cet examen');
+                
+                // Assemblage des éléments
+                listItem.appendChild(textDiv);
+                listItem.appendChild(deleteBtn);
+                selectedExamensList.appendChild(listItem);
+                
+                idsPourSoumission.push(examen.id);
+            });
+        }
+        selectedExamsInput.value = idsPourSoumission.join(',');
+        console.log("Examens sélectionnés:", examensDemandes); // Debug
+    }
+
+    selectedExamensList.addEventListener('click', function (e) {
+        const removeButton = e.target.closest('.btn-outline-danger');
+        if (removeButton) {
+            const indexToRemove = parseInt(removeButton.getAttribute('data-index'));
+            examensDemandes.splice(indexToRemove, 1); 
+            mettreAJourListeExamensDemandes();
+        }
+    });
+    
+    // Initialisation
+    mettreAJourListeExamensDemandes();
+
+    if (demandeExamenForm) {
+        demandeExamenForm.addEventListener('submit', function(event){
             if(examensDemandes.length === 0){
                 alert("Veuillez ajouter au moins un examen à la demande.");
-                event.preventDefault(); // Empêcher la soumission du formulaire
+                event.preventDefault(); 
             }
-            // Le champ selectedExamsInput est déjà mis à jour par mettreAJourListeExamensDemandes()
         });
-
-    });
-  </script>
+    }
+});
+</script>
 </body>
 </html>

@@ -12,36 +12,36 @@ import java.util.List;
 
 public class ExamenDAO {
 
-    public List<Examen> getExamensByType(int typeExamenId) throws SQLException {
-        List<Examen> examens = new ArrayList<>();
-        String sql = "SELECT id, id_type_examen, nom_examen, duree_preparation_resultats_heures, doit_etre_a_jeun, instructions_preparatoires FROM Examen WHERE id_type_examen = ? ORDER BY nom_examen";
-        
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, typeExamenId);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Examen examen = new Examen();
-                    examen.setId(rs.getInt("id"));
-                    examen.setIdTypeExamen(rs.getInt("id_type_examen"));
-                    examen.setNomExamen(rs.getString("nom_examen"));
-                    // Gérer la valeur NULL pour duree_preparation_resultats_heures
-                    if (rs.getObject("duree_preparation_resultats_heures") != null) {
-                        examen.setDureePreparationResultatsHeures(rs.getInt("duree_preparation_resultats_heures"));
-                    } else {
-                        examen.setDureePreparationResultatsHeures(null); // ou une valeur par défaut si vous préférez int au lieu de Integer
-                    }
-                    examen.setDoitEtreAJeun(rs.getBoolean("doit_etre_a_jeun"));
-                    examen.setInstructionsPreparatoires(rs.getString("instructions_preparatoires"));
-                    examens.add(examen);
-                }
-            }
-        }
-        return examens;
-    }
-
+	public List<Examen> getExamensByType(int typeExamenId) throws SQLException {
+	    System.out.println("Debug: Recherche des examens pour typeId = " + typeExamenId);
+	    
+	    List<Examen> examens = new ArrayList<>();
+	    String sql = "SELECT id, nom_examen, doit_etre_a_jeun, duree_preparation_resultats_heures " +
+	                 "FROM Examen WHERE id_type_examen = ? ORDER BY nom_examen";
+	    
+	    try (Connection conn = Database.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        
+	        stmt.setInt(1, typeExamenId);
+	        System.out.println("Debug: Requête SQL = " + stmt.toString());
+	        
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            while (rs.next()) {
+	                Examen examen = new Examen();
+	                examen.setId(rs.getInt("id"));
+	                examen.setNomExamen(rs.getString("nom_examen"));
+	                examen.setDoitEtreAJeun(rs.getBoolean("doit_etre_a_jeun"));
+	                examen.setDureePreparationResultatsHeures(rs.getObject("duree_preparation_resultats_heures") != null ? 
+	                    rs.getInt("duree_preparation_resultats_heures") : null);
+	                
+	                examens.add(examen);
+	                System.out.println("Debug: Examen trouvé - " + examen.getNomExamen());
+	            }
+	        }
+	    }
+	    return examens;
+	}
+	
     public Examen getExamenById(int examenId) throws SQLException {
         Examen examen = null;
         String sql = "SELECT id, id_type_examen, nom_examen, duree_preparation_resultats_heures, doit_etre_a_jeun, instructions_preparatoires FROM Examen WHERE id = ?";
