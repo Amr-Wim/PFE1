@@ -2,9 +2,11 @@ package controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import dao.AllergieDAO;
 import dao.AntecedantDAO;
+import dao.DemandeExamenDAO;
 import dao.DiagnosticDAO;
 import dao.HospitalisationDAO;
 import dao.MedecinDAO;
@@ -17,6 +19,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.DemandeExamen;
 import model.Hospitalisation;
 import model.Medecin;
 import model.Patient;
@@ -96,6 +99,12 @@ public class LoginServlet extends HttpServlet {
                 
                 // Chargement des données médicales
                 loadMedicalData(patient.getId(), session);
+                
+                // Chargement des demandes d'examens
+                DemandeExamenDAO demandeExamenDAO = new DemandeExamenDAO();
+                List<DemandeExamen> demandesExamens = demandeExamenDAO.getDemandesByPatientId(patient.getId());
+                session.setAttribute("demandesExamens", demandesExamens);
+                System.out.println("Demandes d'examens chargées: " + demandesExamens.size());
                 
                 // Hospitalisation
                 HospitalisationDAO hospDAO = new HospitalisationDAO();

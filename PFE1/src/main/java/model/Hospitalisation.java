@@ -14,6 +14,15 @@ public class Hospitalisation {
 	    private String motif;
 	    private Date dateAdmission;
 	    private Medecin medecin;
+	    private String diagnosticInitial;
+	    
+	    
+		public String getDiagnosticInitial() {
+			return diagnosticInitial;
+		}
+		public void setDiagnosticInitial(String diagnosticInitial) {
+			this.diagnosticInitial = diagnosticInitial;
+		}
 		public Hospitalisation(int id, int idPatient, String nomHopital, String service, String duree, String etat,
 				String chambre, int idMedecin, String motif, Date dateAdmission, Medecin medecin) {
 			super();

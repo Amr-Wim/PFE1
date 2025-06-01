@@ -7,12 +7,12 @@ import model.Medecin;
 import util.Database;
 
 public class MedecinDAO {
-
+    
     // Récupérer un médecin par son ID
 	public Medecin getById(int id) throws SQLException {
 	    String sql = "SELECT m.*, u.nom, u.prenom FROM medecin m " +
-	                "JOIN utilisateur u ON m.ID_Medecin = u.id " +
-	                "WHERE m.ID_Medecin = ?";
+	                "JOIN utilisateur u ON m.ID_Medecin = u.id " + // Correction ici
+	                "WHERE m.ID_Medecin = ?"; // Correction ici
 	    
 	    try (Connection conn = Database.getConnection();
 	         PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -22,7 +22,7 @@ public class MedecinDAO {
 	        
 	        if (rs.next()) {
 	            Medecin medecin = new Medecin();
-	            medecin.setId(rs.getInt("ID_Medecin"));
+	            medecin.setId(rs.getInt("ID_Medecin")); // Correction ici
 	            medecin.setSpecialite(rs.getString("specialite"));
 	            medecin.setNom(rs.getString("nom"));
 	            medecin.setPrenom(rs.getString("prenom"));
@@ -31,7 +31,6 @@ public class MedecinDAO {
 	        return null;
 	    }
 	}
-
     // Récupérer tous les médecins
     public List<Medecin> getAll() throws SQLException {
         List<Medecin> medecins = new ArrayList<>();

@@ -18,25 +18,48 @@ import dao.MedecinDAO;
 
 @WebServlet("/patient/hospitalisation")
 public class HospitalisationServlet extends HttpServlet {
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	        throws ServletException, IOException {
-	    
-	    HttpSession session = request.getSession();
-	    // Récupérer directement depuis la session plutôt que de re-quérir la BD
-	    Hospitalisation hosp = (Hospitalisation) session.getAttribute("hospitalisation");
-	    
-	    if (hosp != null && hosp.getIdMedecin() > 0) {
-	        try {
-	            MedecinDAO medecinDAO = new MedecinDAO();
-	            Medecin medecin = medecinDAO.getById(hosp.getIdMedecin());
-	            hosp.setMedecin(medecin);
-	        } catch (SQLException e) {
-	            // Logger l'erreur mais continuer sans les infos du médecin
-	            System.err.println("Erreur récupération médecin: " + e.getMessage());
-	        }
-	    }
-	    
-	    // Transférer vers la JSP
-	    request.getRequestDispatcher("/hospitalisation.jsp").forward(request, response);
-	}
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+    	
+        HttpSession session = request.getSession();
+        Patient patient = (Patient) session.getAttribute("patient");
+        
+        
+        if (patient == null) {
+            System.out.println("DEBUG - Aucun patient en session, redirection vers login");
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        System.out.println("DEBUG - Recherche hospitalisation pour patient ID: " + patient.getId());
+        
+        try {
+            HospitalisationDAO hospDAO = new HospitalisationDAO();
+            Hospitalisation hosp = hospDAO.getCurrentByPatientId(patient.getId());
+            
+            
+            System.out.println("DEBUG - Résultat hospitalisation: " + (hosp != null ? "trouvé" : "non trouvé"));
+            
+            if (hosp != null) {
+                System.out.println("DEBUG - Hospitalisation trouvée: " + hosp.getId());
+                
+                if (hosp.getMedecin() == null && hosp.getIdMedecin() > 0) {
+                    System.out.println("DEBUG - Chargement des infos médecin pour ID: " + hosp.getIdMedecin());
+                    MedecinDAO medecinDAO = new MedecinDAO();
+                    Medecin medecin = medecinDAO.getById(hosp.getIdMedecin());
+                    hosp.setMedecin(medecin);
+                }
+                session.setAttribute("hospitalisation", hosp);
+            }
+            
+            request.getRequestDispatcher("/hospitalisation.jsp").forward(request, response);
+            
+        } catch (SQLException e) {
+            System.err.println("ERREUR SQL: " + e.getMessage());
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Erreur lors de la récupération des données d'hospitalisation");
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
+        }
+    }
 }

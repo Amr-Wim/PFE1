@@ -7,8 +7,17 @@ public class Examen {
     private Integer dureePreparationResultatsHeures; // Utiliser Integer pour permettre NULL
     private boolean doitEtreAJeun; // Mappe à tinyint(1)
     private String instructionsPreparatoires;
+    private TypeExamen typeExamen;
 
-    // Constructeur vide
+    public TypeExamen getTypeExamen() {
+		return typeExamen;
+	}
+
+	public void setTypeExamen(TypeExamen typeExamen) {
+		this.typeExamen = typeExamen;
+	}
+
+	// Constructeur vide
     public Examen() {}
 
     // Constructeur avec paramètres

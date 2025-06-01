@@ -174,7 +174,16 @@
                         
                         <div class="info-item">
                             <span class="info-label"><i class="fas fa-user-md me-2"></i>Médecin :</span>
-                            <span class="info-value">Dr. ${hospitalisation.medecin.nom}</span>
+                            <span class="info-value">
+                                <c:choose>
+                                    <c:when test="${not empty hospitalisation.medecin}">
+                                        Dr. ${hospitalisation.medecin.nom} ${hospitalisation.medecin.prenom}
+                                    </c:when>
+                                    <c:otherwise>
+                                        Non spécifié
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
                         </div>
                         
                         <div class="info-item">
@@ -188,12 +197,19 @@
                             <span class="info-label"><i class="fas fa-clock me-2"></i>Durée prévue :</span>
                             <span class="info-value">${hospitalisation.duree}</span>
                         </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-heartbeat me-2"></i>État :</span>
+                            <span class="info-value">${hospitalisation.etat}</span>
+                        </div>
                     </div>
                     
-                    <div class="hospitalisation-alert alert-${hospitalisation.etat == 'Critique' ? 'danger' : 'info'}">
-                        <h4><i class="fas fa-info-circle me-2"></i>État du patient</h4>
-                        <p><strong>État :</strong> ${hospitalisation.etat}</p>
+                    <div class="hospitalisation-alert ${hospitalisation.etat == 'Critique' ? 'alert-danger' : 'alert-info'}">
+                        <h4><i class="fas fa-info-circle me-2"></i>Détails de l'hospitalisation</h4>
                         <p><strong>Motif :</strong> ${hospitalisation.motif}</p>
+                        <c:if test="${not empty hospitalisation.diagnosticInitial}">
+                            <p><strong>Diagnostic initial :</strong> ${hospitalisation.diagnosticInitial}</p>
+                        </c:if>
                     </div>
                 </c:when>
                 <c:otherwise>

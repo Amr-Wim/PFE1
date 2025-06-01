@@ -1,12 +1,17 @@
 package dao;
 
 import model.DemandeExamen;
+import model.Examen;
+import model.TypeExamen;
 import util.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types; // Pour Types.VARCHAR, Types.DATE, etc.
+import java.util.ArrayList;
+import java.util.List;
 
 public class DemandeExamenDAO {
 
@@ -73,4 +78,55 @@ public class DemandeExamenDAO {
 	        return stmt.executeUpdate() > 0;
 	    }
 	}
-}
+	public List<DemandeExamen> getDemandesByPatientId(int patientId) throws SQLException {
+	    List<DemandeExamen> demandes = new ArrayList<>();
+	    String sql = "SELECT de.*, e.id as e_id, e.nom_examen, e.doit_etre_a_jeun, "
+	               + "e.duree_preparation_resultats_heures, e.instructions_preparatoires, "
+	               + "te.id as te_id, te.nom_type "
+	               + "FROM DemandeExamen de "
+	               + "JOIN Examen e ON de.id_examen = e.id "
+	               + "JOIN TypeExamen te ON e.id_type_examen = te.id "
+	               + "WHERE de.id_patient = ? "
+	               + "ORDER BY de.date_demande DESC";
+
+	    try (Connection conn = Database.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        
+	        stmt.setInt(1, patientId);
+	        System.out.println("DEBUG - Executing query: " + stmt.toString());
+	        
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            while (rs.next()) {
+	                DemandeExamen demande = new DemandeExamen();
+	                // Remplissage des champs de base
+	                demande.setId(rs.getInt("id"));
+	                demande.setDateDemande(rs.getDate("date_demande"));
+	                demande.setDateEstimeeResultatsPrets(rs.getDate("date_estimee_resultats_prets"));
+	                demande.setNotesMedecin(rs.getString("notes_medecin"));
+	                demande.setStatutDemande(rs.getString("statut_demande"));
+	                
+	                // Création de l'objet Examen
+	                Examen examen = new Examen();
+	                examen.setId(rs.getInt("e_id"));
+	                examen.setNomExamen(rs.getString("nom_examen"));
+	                examen.setDoitEtreAJeun(rs.getBoolean("doit_etre_a_jeun"));
+	                examen.setDureePreparationResultatsHeures(rs.getObject("duree_preparation_resultats_heures") != null ? 
+	                    rs.getInt("duree_preparation_resultats_heures") : null);
+	                examen.setInstructionsPreparatoires(rs.getString("instructions_preparatoires"));
+	                
+	                // Création du TypeExamen
+	                TypeExamen type = new TypeExamen();
+	                type.setId(rs.getInt("te_id"));
+	                type.setNomType(rs.getString("nom_type"));
+	                
+	                examen.setTypeExamen(type);
+	                demande.setExamen(examen);
+	                
+	                demandes.add(demande);
+	                System.out.println("DEBUG - Added exam: " + examen.getNomExamen());
+	            }
+	        }
+	    }
+	    return demandes;
+	}
+	}

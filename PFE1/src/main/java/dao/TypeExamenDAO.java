@@ -30,4 +30,24 @@ public class TypeExamenDAO {
         }
         return types;
     }
+    
+    public TypeExamen getTypeExamenById(int id) throws SQLException {
+        String sql = "SELECT * FROM TypeExamen WHERE id = ?";
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    TypeExamen type = new TypeExamen();
+                    type.setId(rs.getInt("id"));
+                    type.setNomType(rs.getString("nom_type"));
+                    return type;
+                }
+            }
+        }
+        return null;
+    }
 }

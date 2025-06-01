@@ -18,8 +18,22 @@ public class DemandeExamen {
     private Date dateResultatsDisponibles; // java.util.Date, peut inclure l'heure
     private Date dateCreation; // Automatiquement géré par la DB
     private Date dateModification; // Automatiquement géré par la DB
+    
+    private Examen examen;
 
-    // Constructeur vide
+    public Examen getExamen() {
+		return examen;
+	}
+
+	public void setExamen(Examen examen) {
+		this.examen = examen;
+	}
+
+	public void setResultatsFichierUrl(String resultatsFichierUrl) {
+		this.resultatsFichierUrl = resultatsFichierUrl;
+	}
+
+	// Constructeur vide
     public DemandeExamen() {}
 
     // Getters et Setters pour tous les champs

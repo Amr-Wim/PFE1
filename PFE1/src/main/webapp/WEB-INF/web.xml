@@ -95,5 +95,14 @@
     <servlet-name>PlanifierExamen</servlet-name>
     <servlet-class>controllers.PlanifierExamen</servlet-class>
   </servlet>
-  
+  <servlet>
+    <description></description>
+    <display-name>PatientExamenServlet</display-name>
+    <servlet-name>PatientExamenServlet</servlet-name>
+    <servlet-class>controllers.PatientExamenServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PatientExamenServlet</servlet-name>
+    <url-pattern>/PatientExamenServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
