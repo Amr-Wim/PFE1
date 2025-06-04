@@ -105,4 +105,24 @@
     <servlet-name>PatientExamenServlet</servlet-name>
     <url-pattern>/PatientExamenServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>CreerHospitalisationServlet</display-name>
+    <servlet-name>CreerHospitalisationServlet</servlet-name>
+    <servlet-class>controllers.CreerHospitalisationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CreerHospitalisationServlet</servlet-name>
+    <url-pattern>/CreerHospitalisationServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>NouvelleHospitalisationServlet</display-name>
+    <servlet-name>NouvelleHospitalisationServlet</servlet-name>
+    <servlet-class>controllers.NouvelleHospitalisationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>NouvelleHospitalisationServlet</servlet-name>
+    <url-pattern>/NouvelleHospitalisationServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

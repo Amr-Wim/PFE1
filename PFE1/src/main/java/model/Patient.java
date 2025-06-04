@@ -15,6 +15,7 @@ public class Patient extends Utilisateur {
     private String numeroAssurance;
     private String cin;
     
+    
 
     public Patient(int id, String nom, String prenom, String email, String sexe, String login, String motDePasse,
 			String role, Date dateNaissance, String adresse, Integer taille, double poids, String groupeSanguin,
@@ -105,5 +106,11 @@ public class Patient extends Utilisateur {
 
     public void setNumeroAssurance(String numeroAssurance) {
         this.numeroAssurance = numeroAssurance;
+    }
+    
+    public int getAge() {
+        if (dateNaissance == null) return 0;
+        long ageInMillis = System.currentTimeMillis() - dateNaissance.getTime();
+        return (int) (ageInMillis / (1000L * 60 * 60 * 24 * 365));
     }
 }

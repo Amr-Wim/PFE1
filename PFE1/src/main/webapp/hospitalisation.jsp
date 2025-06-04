@@ -168,9 +168,16 @@
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-label"><i class="fas fa-bed me-2"></i>Chambre :</span>
-                            <span class="info-value">${hospitalisation.chambre}</span>
-                        </div>
+    <span class="info-label"><i class="fas fa-bed me-2"></i>Chambre :</span>
+    <span class="info-value">
+        <c:if test="${not empty hospitalisation.chambre}">
+            ${hospitalisation.chambre.numero}
+        </c:if>
+        <c:if test="${empty hospitalisation.chambre}">
+            Non attribuée
+        </c:if>
+    </span>
+</div>
                         
                         <div class="info-item">
                             <span class="info-label"><i class="fas fa-user-md me-2"></i>Médecin :</span>

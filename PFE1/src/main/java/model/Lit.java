@@ -1,32 +1,41 @@
 package model;
 
-
 public class Lit {
     private int id;
-    private String numeroLit;
-    private int idChambre;
-    private boolean estDisponible;
+    private int chambreId;
+    private String sexeAutorise;
+    private int ageMin;
+    private int ageMax;
+    private boolean occupe;
     
     // Constructeurs
     public Lit() {}
     
-    public Lit(int id, String numeroLit, int idChambre, boolean estDisponible) {
+    public Lit(int id, int chambreId, String sexeAutorise, int ageMin, int ageMax, boolean occupe) {
         this.id = id;
-        this.numeroLit = numeroLit;
-        this.idChambre = idChambre;
-        this.estDisponible = estDisponible;
+        this.chambreId = chambreId;
+        this.sexeAutorise = sexeAutorise;
+        this.ageMin = ageMin;
+        this.ageMax = ageMax;
+        this.occupe = occupe;
     }
     
     // Getters et Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     
-    public String getNumeroLit() { return numeroLit; }
-    public void setNumeroLit(String numeroLit) { this.numeroLit = numeroLit; }
+    public int getChambreId() { return chambreId; }
+    public void setChambreId(int chambreId) { this.chambreId = chambreId; }
     
-    public int getIdChambre() { return idChambre; }
-    public void setIdChambre(int idChambre) { this.idChambre = idChambre; }
+    public String getSexeAutorise() { return sexeAutorise; }
+    public void setSexeAutorise(String sexeAutorise) { this.sexeAutorise = sexeAutorise; }
     
-    public boolean isEstDisponible() { return estDisponible; }
-    public void setEstDisponible(boolean estDisponible) { this.estDisponible = estDisponible; }
+    public int getAgeMin() { return ageMin; }
+    public void setAgeMin(int ageMin) { this.ageMin = ageMin; }
+    
+    public int getAgeMax() { return ageMax; }
+    public void setAgeMax(int ageMax) { this.ageMax = ageMax; }
+    
+    public boolean isOccupe() { return occupe; }
+    public void setOccupe(boolean occupe) { this.occupe = occupe; }
 }

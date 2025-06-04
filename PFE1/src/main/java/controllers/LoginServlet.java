@@ -52,26 +52,32 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("utilisateur", utilisateur);
             session.setAttribute("userId", utilisateur.getId());
             
-            // Gestion spécifique pour les médecins
             if ("medecin".equals(utilisateur.getRole())) {
                 try {
                     MedecinDAO medecinDAO = new MedecinDAO();
-                    Medecin medecin = medecinDAO.getById(utilisateur.getId());
+                    Medecin medecin = medecinDAO.getMedecinWithServiceAndHopital(utilisateur.getId());
                     
-                    if (medecin == null) {
-                        System.err.println("Aucun médecin trouvé pour l'ID: " + utilisateur.getId());
-                        throw new Exception("Profil médecin incomplet");
+                    if (medecin != null) {
+                        // Transfert des données de base
+                        medecin.setNom(utilisateur.getNom());
+                        medecin.setPrenom(utilisateur.getPrenom());
+                        medecin.setEmail(utilisateur.getEmail());
+                        // ... autres attributs nécessaires
+                        
+                        System.out.println("Médecin à stocker en session - Service: " + medecin.getNomService() 
+                            + ", Hôpital: " + medecin.getNomHopital());
+                        
+                        session.setAttribute("medecin", medecin);
+                    } else {
+                        System.err.println("Aucune donnée trouvée pour le médecin ID: " + utilisateur.getId());
                     }
-                    
-                    
-                    session.setAttribute("idMedecin", medecin.getId());
-                    System.out.println("Médecin connecté: " + medecin.getId());
-                    
                 } catch (SQLException e) {
-                    System.err.println("Erreur DB médecin: " + e.getMessage());
-                    throw new ServletException("Erreur profil médecin", e);
+                    System.err.println("Erreur DB: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
+            
+            
             
             // Gestion spécifique pour les patients
             if ("patient".equals(utilisateur.getRole())) {

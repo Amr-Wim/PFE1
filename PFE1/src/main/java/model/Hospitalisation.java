@@ -9,14 +9,48 @@ public class Hospitalisation {
 	    private String service;
 	    private String duree;
 	    private String etat;
-	    private String chambre;
-	    private int idMedecin;
+	    private Chambre chambre;
+	    
+	    private Integer litId;
+	    
+	     
+	    public Integer getLitId() {
+			return litId;
+		}
+		public void setLitId(Integer litId) {
+			this.litId = litId;
+		}
+		private String nomService; // Ajouté pour faciliter l'affichage
+
+	    
+	    public String getNomService() {
+			return nomService;
+		}
+		public void setNomService(String nomService) {
+			this.nomService = nomService;
+		}
+		
+		private int idMedecin;
 	    private String motif;
 	    private Date dateAdmission;
 	    private Medecin medecin;
 	    private String diagnosticInitial;
+	    private Date dateSortiePrevue;
+	    private Date dateSortieReelle;
 	    
 	    
+		public Date getDateSortiePrevue() {
+			return dateSortiePrevue;
+		}
+		public void setDateSortiePrevue(Date dateSortiePrevue) {
+			this.dateSortiePrevue = dateSortiePrevue;
+		}
+		public Date getDateSortieReelle() {
+			return dateSortieReelle;
+		}
+		public void setDateSortieReelle(Date dateSortieReelle) {
+			this.dateSortieReelle = dateSortieReelle;
+		}
 		public String getDiagnosticInitial() {
 			return diagnosticInitial;
 		}
@@ -24,7 +58,7 @@ public class Hospitalisation {
 			this.diagnosticInitial = diagnosticInitial;
 		}
 		public Hospitalisation(int id, int idPatient, String nomHopital, String service, String duree, String etat,
-				String chambre, int idMedecin, String motif, Date dateAdmission, Medecin medecin) {
+				Chambre chambre, int idMedecin, String motif, Date dateAdmission, Medecin medecin) {
 			super();
 			this.id = id;
 			this.idPatient = idPatient;
@@ -77,10 +111,10 @@ public class Hospitalisation {
 		public void setEtat(String etat) {
 			this.etat = etat;
 		}
-		public String getChambre() {
+		public Chambre getChambre() {
 			return chambre;
 		}
-		public void setChambre(String chambre) {
+		public void setChambre(Chambre chambre) {
 			this.chambre = chambre;
 		}
 		public int getIdMedecin() {

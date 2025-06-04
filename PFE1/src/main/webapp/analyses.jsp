@@ -25,11 +25,14 @@
         }
         
         .header {
-            background-color: var(--carepath-blue);
-            color: white;
-            padding: 12px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+      background-color: #1e3a5f;
+      padding: 20px 60px;
+      display: flex;
+      align-items: center;
+      border-bottom: 4px solid var(--accent-red);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
          footer {
       background-color: var(--carepath-blue);
       color: #ffffff;
@@ -149,7 +152,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                      <img src="image/image2.png" alt="Logo CarePath" style="height: 50px;">
-                    <h1 class="h4 mb-0 ms-3">CAREPATH - Mes Analyses</h1>
+                    <h1 class="h4 mb-0 ms-3">CAREPATH </h1>
                 </div>
                 <div class="d-flex gap-3">
                 <a class="nav-link text-white" href="patient_dashboard.jsp">

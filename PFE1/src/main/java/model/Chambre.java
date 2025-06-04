@@ -1,23 +1,20 @@
 package model;
 
-
-
 import java.util.List;
 
 public class Chambre {
     private int id;
     private String numero;
-    private String service;
+    private int idService;
     private List<Lit> lits;
-    private int nombreLitsDisponibles;
     
     // Constructeurs
     public Chambre() {}
     
-    public Chambre(int id, String numero, String service) {
+    public Chambre(int id, String numero, int idService) {
         this.id = id;
         this.numero = numero;
-        this.service = service;
+        this.idService = idService;
     }
     
     // Getters et Setters
@@ -27,14 +24,9 @@ public class Chambre {
     public String getNumero() { return numero; }
     public void setNumero(String numero) { this.numero = numero; }
     
-    public String getService() { return service; }
-    public void setService(String service) { this.service = service; }
+    public int getIdService() { return idService; }
+    public void setIdService(int idService) { this.idService = idService; }
     
     public List<Lit> getLits() { return lits; }
     public void setLits(List<Lit> lits) { this.lits = lits; }
-    
-    public int getNombreLitsDisponibles() { return nombreLitsDisponibles; }
-    public void setNombreLitsDisponibles(int nombreLitsDisponibles) { 
-        this.nombreLitsDisponibles = nombreLitsDisponibles; 
-    }
 }

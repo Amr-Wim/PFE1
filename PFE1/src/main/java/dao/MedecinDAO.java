@@ -3,34 +3,36 @@ package dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import model.Medecin;
 import util.Database;
 
 public class MedecinDAO {
-    
-    // Récupérer un médecin par son ID
 	public Medecin getById(int id) throws SQLException {
-	    String sql = "SELECT m.*, u.nom, u.prenom FROM medecin m " +
-	                "JOIN utilisateur u ON m.ID_Medecin = u.id " + // Correction ici
-	                "WHERE m.ID_Medecin = ?"; // Correction ici
+	    // Requête simplifiée utilisant uniquement les colonnes existantes
+	    String query = "SELECT m.ID_Medecin, m.specialite, m.Grade, " +
+	                  "m.ID_Service, m.Statut, m.Numero_Ordre " +
+	                  "FROM medecin m WHERE m.ID_Medecin = ?";
 	    
-	    try (Connection conn = Database.getConnection();
-	         PreparedStatement stmt = conn.prepareStatement(sql)) {
-	        
-	        stmt.setInt(1, id);
-	        ResultSet rs = stmt.executeQuery();
+	    try (Connection con = Database.getConnection();
+	         PreparedStatement ps = con.prepareStatement(query)) {
+	        ps.setInt(1, id);
+	        ResultSet rs = ps.executeQuery();
 	        
 	        if (rs.next()) {
 	            Medecin medecin = new Medecin();
-	            medecin.setId(rs.getInt("ID_Medecin")); // Correction ici
+	            medecin.setId(rs.getInt("ID_Medecin"));
 	            medecin.setSpecialite(rs.getString("specialite"));
-	            medecin.setNom(rs.getString("nom"));
-	            medecin.setPrenom(rs.getString("prenom"));
+	            medecin.setGrade(rs.getString("Grade"));
+	            medecin.setIdService(rs.getInt("ID_Service"));
+	            medecin.setStatut(rs.getString("Statut"));
+	            medecin.setNumeroOrdre(rs.getString("Numero_Ordre"));
 	            return medecin;
 	        }
-	        return null;
 	    }
+	    return null;
 	}
+
     // Récupérer tous les médecins
     public List<Medecin> getAll() throws SQLException {
         List<Medecin> medecins = new ArrayList<>();
@@ -116,6 +118,50 @@ public class MedecinDAO {
         medecin.setMotDePasse(rs.getString("mot_de_passe"));
         medecin.setRole(rs.getString("role"));
         medecin.setSpecialite(rs.getString("specialite"));
+        return medecin;
+    }
+    
+ // ... dans ta méthode qui récupère le médecin avec service et hôpital ...
+    public Medecin getMedecinWithServiceAndHopital(int utilisateurId) throws SQLException {
+        Medecin medecin = null;
+        // Tu as déjà une requête pour récupérer les infos de base du médecin.
+        // Modifie-la ou ajoute une jointure :
+        String sql = "SELECT u.*, m.specialite, m.Grade, m.ID_Service, m.Statut AS MedecinStatut, m.Numero_Ordre, " +
+                     "s.Nom_Service_FR, h.Nom_Hopital " +
+                     "FROM utilisateur u " +
+                     "JOIN medecin m ON u.id = m.ID_Medecin " +
+                     "LEFT JOIN service s ON m.ID_Service = s.ID_Service " + // LEFT JOIN au cas où un médecin n'aurait pas de service défini (peu probable mais sûr)
+                     "LEFT JOIN hopital h ON s.ID_Hopital = h.ID_Hopital " +
+                     "WHERE u.id = ? AND u.role = 'medecin'";
+
+        try (Connection conn = Database.getConnection(); // Ta classe de connexion
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, utilisateurId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    medecin = new Medecin();
+                    // Peuple les champs de Utilisateur (super-classe)
+                    medecin.setId(rs.getInt("id"));
+                    medecin.setNom(rs.getString("nom"));
+                    medecin.setPrenom(rs.getString("prenom"));
+                    medecin.setEmail(rs.getString("email"));
+                    // ... autres champs de l'utilisateur ...
+                    medecin.setRole(rs.getString("role"));
+
+                    // Peuple les champs spécifiques à Medecin
+                    medecin.setSpecialite(rs.getString("specialite"));
+                    medecin.setGrade(rs.getString("Grade"));
+                    medecin.setIdService(rs.getInt("ID_Service"));
+                    medecin.setStatut(rs.getString("MedecinStatut"));
+                    medecin.setNumeroOrdre(rs.getString("Numero_Ordre"));
+
+                    // Peuple nomService et nomHopital
+                    medecin.setNomService(rs.getString("Nom_Service_FR"));
+                    medecin.setNomHopital(rs.getString("Nom_Hopital"));
+                }
+            }
+        } // La connexion et le PreparedStatement sont fermés automatiquement ici
         return medecin;
     }
 }

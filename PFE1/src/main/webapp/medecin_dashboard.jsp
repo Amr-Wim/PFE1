@@ -143,11 +143,16 @@
        <a href="index.jsp">Index</a>
       </div>
   </header>
-<%
-    String medecin = (String) session.getAttribute("nommedecin");
-%>
+<div class="container">
+            <!-- Message de bienvenue -->
+            <div class="welcome-message text-center mb-5">
+                <h1 class="mb-3" style="color: var(--main-blue);">
+                    <i class="fas fa-user-circle me-2"></i>Bienvenue, ${utilisateur.prenom}
+                </h1>
+                <p class="lead">Accédez rapidement à toutes les fonctionnalités de votre espace medecin</p>
+            </div>
 <div class="AB">
-<p>BIENVENUE : <%= medecin %></p>
+
 </div>
   <!-- Main Dashboard -->
   <main>
@@ -155,7 +160,7 @@
       <div class="row justify-content-center card-group">
 
         <div class="col-md-4">
-          <a href="nouvelleHospitalisation.jsp" style="text-decoration: none;">
+          <a href="nouvelleHospitalisationForm" style="text-decoration: none;">
             <div class="menu-card">
               <h5>Nouvelle Hospitalisation</h5>
               <p>Initiez une nouvelle hospitalisation et renseignez les données du patient.</p>
