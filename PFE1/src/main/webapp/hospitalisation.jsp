@@ -147,44 +147,60 @@
         </div>
     </header>
 
- <main>
+ <main class="container mt-4 mb-5">
         <div class="medical-section">
             <h2 class="section-title">
                 <i class="fas fa-procedures me-2"></i>
-                Informations d'Hospitalisation
+                Mon Hospitalisation Actuelle
             </h2>
             
+            <c:if test="${not empty errorMessage}">
+                <div class="alert alert-danger">${errorMessage}</div>
+            </c:if>
+
             <c:choose>
-                <c:when test="${not empty hospitalisation}">
+                <c:when test="${not empty sessionScope.hospitalisation}">
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label"><i class="fas fa-hospital me-2"></i>Hôpital :</span>
-                            <span class="info-value">${hospitalisation.nomHopital}</span>
+                            <span class="info-value">${sessionScope.hospitalisation.nomHopital}</span>
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-label"><i class="fas fa-clinic-medical me-2"></i>Service :</span>
-                            <span class="info-value">${hospitalisation.service}</span>
+                            <span class="info-label"><i class="fas fa-clinic-medical me-2"></i>Service de l'hospitalisation :</span>
+                            <span class="info-value">${sessionScope.hospitalisation.service}</span>
                         </div>
                         
-                        <div class="info-item">
-    <span class="info-label"><i class="fas fa-bed me-2"></i>Chambre :</span>
-    <span class="info-value">
-        <c:if test="${not empty hospitalisation.chambre}">
-            ${hospitalisation.chambre.numero}
-        </c:if>
-        <c:if test="${empty hospitalisation.chambre}">
-            Non attribuée
-        </c:if>
-    </span>
-</div>
+                        <c:if test="${not empty sessionScope.hospitalisation.litId}">
+                            <div class="info-item">
+                                <span class="info-label"><i class="fas fa-bed me-2"></i>Lit :</span>
+                                <span class="info-value">${sessionScope.hospitalisation.numeroLit}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fas fa-door-open me-2"></i>Chambre :</span>
+                                <span class="info-value">${sessionScope.hospitalisation.numeroChambre}</span>
+                            </div>
+                             <div class="info-item">
+                                <span class="info-label"><i class="fas fa-building me-2"></i>Service de la chambre :</span>
+                                <span class="info-value">${sessionScope.hospitalisation.nomServiceChambre}</span>
+                            </div>
+                        </c:if>
+                        <c:if test="${empty sessionScope.hospitalisation.litId}">
+                             <div class="info-item">
+                                <span class="info-label"><i class="fas fa-bed me-2"></i>Lit/Chambre :</span>
+                                <span class="info-value">Information non disponible</span>
+                            </div>
+                        </c:if>
                         
                         <div class="info-item">
-                            <span class="info-label"><i class="fas fa-user-md me-2"></i>Médecin :</span>
+                            <span class="info-label"><i class="fas fa-user-md me-2"></i>Médecin traitant :</span>
                             <span class="info-value">
                                 <c:choose>
-                                    <c:when test="${not empty hospitalisation.medecin}">
-                                        Dr. ${hospitalisation.medecin.nom} ${hospitalisation.medecin.prenom}
+                                    <c:when test="${not empty sessionScope.hospitalisation.medecin}">
+                                        Dr. ${sessionScope.hospitalisation.medecin.prenom} ${sessionScope.hospitalisation.medecin.nom}
+                                    </c:when>
+                                    <c:when test="${not empty sessionScope.hospitalisation.idMedecin}">
+                                        Médecin ID: ${sessionScope.hospitalisation.idMedecin} (Détails non chargés)
                                     </c:when>
                                     <c:otherwise>
                                         Non spécifié
@@ -194,47 +210,58 @@
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-label"><i class="fas fa-calendar-check me-2"></i>Date admission :</span>
+                            <span class="info-label"><i class="fas fa-calendar-alt me-2"></i>Date d'admission :</span>
                             <span class="info-value">
-                                <fmt:formatDate value="${hospitalisation.dateAdmission}" pattern="dd/MM/yyyy"/>
+                                <fmt:formatDate value="${sessionScope.hospitalisation.dateAdmission}" pattern="dd/MM/yyyy"/>
                             </span>
                         </div>
                         
                         <div class="info-item">
                             <span class="info-label"><i class="fas fa-clock me-2"></i>Durée prévue :</span>
-                            <span class="info-value">${hospitalisation.duree}</span>
+                            <span class="info-value">${sessionScope.hospitalisation.duree}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-calendar-check me-2"></i>Sortie prévue le :</span>
+                            <span class="info-value">
+                                <c:if test="${not empty sessionScope.hospitalisation.dateSortiePrevue}">
+                                    <fmt:formatDate value="${sessionScope.hospitalisation.dateSortiePrevue}" pattern="dd/MM/yyyy"/>
+                                </c:if>
+                                <c:if test="${empty sessionScope.hospitalisation.dateSortiePrevue}">
+                                    Non définie
+                                </c:if>
+                            </span>
                         </div>
                         
                         <div class="info-item">
-                            <span class="info-label"><i class="fas fa-heartbeat me-2"></i>État :</span>
-                            <span class="info-value">${hospitalisation.etat}</span>
+                            <span class="info-label"><i class="fas fa-procedures me-2"></i>État :</span>
+                            <span class="info-value">${sessionScope.hospitalisation.etat}</span>
                         </div>
                     </div>
                     
-                    <div class="hospitalisation-alert ${hospitalisation.etat == 'Critique' ? 'alert-danger' : 'alert-info'}">
-                        <h4><i class="fas fa-info-circle me-2"></i>Détails de l'hospitalisation</h4>
-                        <p><strong>Motif :</strong> ${hospitalisation.motif}</p>
-                        <c:if test="${not empty hospitalisation.diagnosticInitial}">
-                            <p><strong>Diagnostic initial :</strong> ${hospitalisation.diagnosticInitial}</p>
+                    <div class="hospitalisation-alert alert-info mt-4">
+                        <h5><i class="fas fa-notes-medical me-2"></i>Détails Cliniques</h5>
+                        <p><strong>Motif d'admission :</strong> ${sessionScope.hospitalisation.motif}</p>
+                        <c:if test="${not empty sessionScope.hospitalisation.diagnosticInitial}">
+                            <p><strong>Diagnostic initial :</strong> ${sessionScope.hospitalisation.diagnosticInitial}</p>
                         </c:if>
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div class="alert alert-info text-center">
+                    <div class="alert alert-secondary text-center mt-4">
                         <i class="fas fa-info-circle me-2"></i>
-                        Aucune hospitalisation en cours
+                        Vous n'avez aucune hospitalisation en cours enregistrée.
                     </div>
                 </c:otherwise>
             </c:choose>
             
-            <div class="text-center">
-                <a href="patient_dashboard.jsp" class="btn btn-back">
+            <div class="text-center mt-4">
+                <a href="${pageContext.request.contextPath}/patient_dashboard.jsp" class="btn btn-primary btn-back">
                     <i class="fas fa-arrow-left me-2"></i> Retour au tableau de bord
                 </a>
             </div>
         </div>
     </main>
-
 
 
 <footer>

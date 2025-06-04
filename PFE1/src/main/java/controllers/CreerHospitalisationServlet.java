@@ -210,6 +210,6 @@ public class CreerHospitalisationServlet extends HttpServlet {
             request.setAttribute("error", currentError + " (Attention: La liste des patients n'a pas pu être rechargée.)");
         }
         // Assurez-vous que ce chemin est correct pour votre JSP
-        request.getRequestDispatcher("/WEB-INF/jsp/nouvelle_hospitalisation.jsp").forward(request, response);
+        request.getRequestDispatcher("nouvelleHospitalisation.jsp").forward(request, response);
     }
 }
