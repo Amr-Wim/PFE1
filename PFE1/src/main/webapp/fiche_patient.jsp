@@ -160,19 +160,19 @@
                 </div>
                 
                 <div class="info-item">
-                    <span class="info-label"><i class="fas fa-venus-mars me-2"></i>Genre :</span>
-                  
-                </div>
+    <span class="info-label"><i class="fas fa-venus-mars me-2"></i>Genre :</span>
+    <span class="info-value">${patient.sexe}</span> <%-- AJOUTEZ CECI --%>
+</div>
+                
+               <div class="info-item">
+    <span class="info-label"><i class="fas fa-tint me-2"></i>Groupe sanguin :</span>
+    <span class="info-value">${patient.groupeSanguin}</span> <%-- AJOUTEZ CECI --%>
+</div>
                 
                 <div class="info-item">
-                    <span class="info-label"><i class="fas fa-tint me-2"></i>Groupe sanguin :</span>
-                   
-                </div>
-                
-                <div class="info-item">
-                    <span class="info-label"><i class="fas fa-id-badge me-2"></i>Numéro sécurité sociale :</span>
-                    
-                </div>
+    <span class="info-label"><i class="fas fa-id-badge me-2"></i>Cin :</span>
+    <span class="info-value">${patient.cin}</span> <%-- AJOUTEZ CECI --%>
+</div>
                 
                 <div class="info-item">
                     <span class="info-label"><i class="fas fa-envelope me-2"></i>Email :</span>
@@ -180,9 +180,9 @@
                 </div>
                 
                 <div class="info-item">
-                    <span class="info-label"><i class="fas fa-phone me-2"></i>Téléphone :</span>
-                    
-                </div>
+    <span class="info-label"><i class="fas fa-phone me-2"></i>Téléphone :</span>
+    <span class="info-value">${patient.telephone}</span>
+</div>
                 
                 <div class="info-item">
                     <span class="info-label"><i class="fas fa-map-marker-alt me-2"></i>Adresse :</span>

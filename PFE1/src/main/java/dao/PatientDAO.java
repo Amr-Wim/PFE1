@@ -55,6 +55,8 @@ public class PatientDAO {
 	        patient.setNom(rs.getString("nom"));
 	        patient.setPrenom(rs.getString("prenom"));
 	        patient.setEmail(rs.getString("email"));
+	        patient.setCin(rs.getString("u_cin"));
+	        patient.setTelephone(rs.getString("u_telephone"));
 	        patient.setDateNaissance(rs.getDate("date_naissance"));
 	        patient.setAdresse(rs.getString("adresse"));
 	        return patient;
@@ -124,66 +126,61 @@ public class PatientDAO {
 	 // Méthode utilitaire pour mapper un ResultSet à un objet Patient
 	 // Assure-toi que cette méthode (ou une similaire) est utilisée par getPatientById
 	 // et qu'elle sette bien tous les champs, y compris le sexe.
-	 private Patient mapFullPatient(ResultSet rs) throws SQLException {
-	     Patient patient = new Patient(); // Supposant que Patient hérite d'Utilisateur
+	    private Patient mapFullPatient(ResultSet rs) throws SQLException {
+	        Patient patient = new Patient(); // Patient hérite d'Utilisateur
 
-	     // Champs de Utilisateur (super-classe)
-	     patient.setId(rs.getInt("u_id")); // Utiliser les alias pour éviter ambiguïté
-	     patient.setNom(rs.getString("u_nom"));
-	     patient.setPrenom(rs.getString("u_prenom"));
-	     patient.setEmail(rs.getString("u_email"));
-	     patient.setSexe(rs.getString("u_sexe"));       // <--- SETTER LE SEXE
-	     patient.setLogin(rs.getString("u_login"));     // Optionnel, si besoin
-	     patient.setRole(rs.getString("u_role"));       // Optionnel, si besoin
-	     // Tu peux aussi récupérer u.Date_Naissance, u.Adresse, u.cin si ce sont les sources primaires
-	     // et que la table 'patient' ne fait que les compléter ou les spécialiser.
+	        // Champs de Utilisateur (super-classe)
+	        patient.setId(rs.getInt("u_id"));
+	        patient.setNom(rs.getString("u_nom"));
+	        patient.setPrenom(rs.getString("u_prenom"));
+	        patient.setEmail(rs.getString("u_email"));
+	        patient.setSexe(rs.getString("u_sexe"));
+	        patient.setLogin(rs.getString("u_login")); 
+	        patient.setRole(rs.getString("u_role"));  
+	        patient.setCin(rs.getString("u_cin"));             // <<< CORRECTION: Setter le CIN ici
+	        patient.setTelephone(rs.getString("u_telephone")); // <<< CORRECTION: Setter le Telephone ici
 
-	     // Champs spécifiques de la table Patient
-	     patient.setDateNaissance(rs.getDate("p_date_naissance")); // Vient de la table patient
-	     patient.setAdresse(rs.getString("p_adresse"));             // Vient de la table patient
-	     // Si Patient n'hérite pas d'Utilisateur, et que tu veux quand même CIN etc.
-	     // if (patient.getCin() == null) patient.setCin(rs.getString("u_cin"));
+	        // Champs spécifiques de la table Patient
+	        patient.setDateNaissance(rs.getDate("p_date_naissance"));
+	        patient.setAdresse(rs.getString("p_adresse"));            
 
-	     // Ajouter les autres champs de la table 'patient' si ton modèle Patient les a
-	     // et s'ils sont sélectionnés dans la requête
-	     if (rs.getObject("p_taille") != null) patient.setTaille(rs.getInt("p_taille"));
-	     if (rs.getObject("p_poids") != null) patient.setPoids(rs.getDouble("p_poids")); // Ou rs.getBigDecimal si le modèle utilise BigDecimal
-	     patient.setGroupeSanguin(rs.getString("p_groupe_sanguin"));
-	     patient.setAssuranceMedicale(rs.getString("p_assurance_medicale"));
-	     patient.setNumeroAssurance(rs.getString("p_numero_assurance"));
+	        if (rs.getObject("p_taille") != null) patient.setTaille(rs.getInt("p_taille"));
+	        if (rs.getObject("p_poids") != null) patient.setPoids(rs.getDouble("p_poids"));
+	        patient.setGroupeSanguin(rs.getString("p_groupe_sanguin"));
+	        patient.setAssuranceMedicale(rs.getString("p_assurance_medicale"));
+	        patient.setNumeroAssurance(rs.getString("p_numero_assurance"));
 
-	     return patient;
-	 }
+	        return patient;
+	    }
 
+	    public Patient getPatientById(int id) throws SQLException {
+	        // CORRECTION: Sélectionner u.Telephone et u.cin
+	        String sql = "SELECT u.id as u_id, u.nom as u_nom, u.prenom as u_prenom, u.email as u_email, u.sexe as u_sexe, " +
+	                     "u.login as u_login, u.role as u_role, u.cin as u_cin, " + // u.cin est sélectionné
+	                     "u.Date_Naissance as u_date_naissance_utilisateur, u.Adresse as u_adresse_utilisateur, " +
+	                     "u.Telephone as u_telephone, " + // <<< CORRECTION: Sélectionner u.Telephone
+	                     "p.date_naissance as p_date_naissance, p.adresse as p_adresse, p.Taille as p_taille, p.Poids as p_poids, " +
+	                     "p.Groupe_Sanguin as p_groupe_sanguin, p.Assurance_Medicale as p_assurance_medicale, p.Numero_Assurance as p_numero_assurance " +
+	                     "FROM utilisateur u " +
+	                     "JOIN patient p ON u.id = p.id " +
+	                     "WHERE u.id = ? AND u.role = 'patient'";
 
-	 public Patient getPatientById(int id) throws SQLException {
-	     // CORRECTION: Sélectionner u.sexe et les autres champs nécessaires de 'utilisateur' et 'patient'
-	     // Utiliser des alias pour chaque colonne pour éviter les ambiguïtés si les noms sont les mêmes
-	     String sql = "SELECT u.id as u_id, u.nom as u_nom, u.prenom as u_prenom, u.email as u_email, u.sexe as u_sexe, " +
-	                  "u.login as u_login, u.role as u_role, u.cin as u_cin, u.Date_Naissance as u_date_naissance_utilisateur, u.Adresse as u_adresse_utilisateur, " + // Champs de utilisateur
-	                  "p.date_naissance as p_date_naissance, p.adresse as p_adresse, p.Taille as p_taille, p.Poids as p_poids, " +
-	                  "p.Groupe_Sanguin as p_groupe_sanguin, p.Assurance_Medicale as p_assurance_medicale, p.Numero_Assurance as p_numero_assurance " + // Champs de patient
-	                  "FROM utilisateur u " +
-	                  "JOIN patient p ON u.id = p.id " + // Jointure sur l'ID commun
-	                  "WHERE u.id = ? AND u.role = 'patient'"; // Filtrer par ID utilisateur et rôle
+	        Patient patient = null;
+	        System.out.println("PatientDAO.getPatientById - Exécution SQL: " + sql + " avec ID: " + id);
 
-	     Patient patient = null;
-	     System.out.println("PatientDAO.getPatientById - Exécution SQL: " + sql + " avec ID: " + id); // Log
+	        try (Connection conn = Database.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-	     try (Connection conn = Database.getConnection(); // Ta classe de connexion
-	          PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-	         stmt.setInt(1, id);
-	         try (ResultSet rs = stmt.executeQuery()) {
-	             if (rs.next()) {
-	                 // Utiliser la méthode de mapping pour peupler l'objet
-	                 patient = mapFullPatient(rs);
-	                 System.out.println("PatientDAO.getPatientById - Patient trouvé: " + patient.getNom() + ", Sexe: " + patient.getSexe()); // Log
-	             } else {
-	                 System.out.println("PatientDAO.getPatientById - Aucun patient trouvé pour ID: " + id); // Log
-	             }
-	         }
-	     }
-	     return patient;
-	 }
+	            stmt.setInt(1, id);
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                if (rs.next()) {
+	                    patient = mapFullPatient(rs); // Utilise la méthode mise à jour
+	                    System.out.println("PatientDAO.getPatientById - Patient trouvé: " + patient.getNom() + ", Sexe: " + patient.getSexe() + ", CIN: " + patient.getCin() + ", Tel: " + patient.getTelephone());
+	                } else {
+	                    System.out.println("PatientDAO.getPatientById - Aucun patient trouvé pour ID: " + id);
+	                }
+	            }
+	        }
+	        return patient;
+	    }
 	}

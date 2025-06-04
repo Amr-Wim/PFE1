@@ -7,69 +7,71 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.mindrot.jbcrypt.BCrypt; 
 
 import model.Utilisateur;
 import util.Database;
 
 public class UtilisateurDAO {
 
-    public Utilisateur authentifier(String login, String motDePasse) {
+	public Utilisateur authentifier(String loginInput, String motDePasseInput) throws SQLException { // Ajout de throws SQLException
         Utilisateur utilisateur = null;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        // 1. Récupérer l'utilisateur par login seulement
+        String sql = "SELECT * FROM utilisateur WHERE login = ?";
 
-        try {
-            conn = Database.getConnection();
-            String sql = "SELECT * FROM utilisateur WHERE login = ? AND mot_de_passe = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, login);
-            stmt.setString(2, motDePasse);
+        System.out.println("UtilisateurDAO.authentifier: Tentative pour login = [" + loginInput.trim() + "]");
 
-            rs = stmt.executeQuery();
+        // Gestion correcte des ressources JDBC avec try-with-resources
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            if (rs.next()) {
-                utilisateur = new Utilisateur();
-                utilisateur.setId(rs.getInt("id"));
-                utilisateur.setNom(rs.getString("nom"));
-                utilisateur.setPrenom(rs.getString("prenom"));
-                utilisateur.setEmail(rs.getString("email"));
-                utilisateur.setLogin(rs.getString("login"));
-                utilisateur.setMotDePasse(rs.getString("mot_de_passe"));
-                utilisateur.setRole(rs.getString("role"));
+            pstmt.setString(1, loginInput.trim()); // Bonne pratique d'utiliser trim()
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // 2. Utilisateur trouvé, récupérer son mot de passe haché de la BDD
+                    String hashedPasswordFromDB = rs.getString("mot_de_passe");
+
+                    // 3. Vérifier le mot de passe fourni contre le hachage stocké
+                    //    Assure-toi que motDePasseInput n'est pas null avant BCrypt.checkpw
+                    if (hashedPasswordFromDB != null && motDePasseInput != null && BCrypt.checkpw(motDePasseInput, hashedPasswordFromDB)) {
+                        // Mot de passe correct !
+                        utilisateur = new Utilisateur();
+                        utilisateur.setId(rs.getInt("id"));
+                        utilisateur.setNom(rs.getString("nom"));
+                        utilisateur.setPrenom(rs.getString("prenom"));
+                        utilisateur.setEmail(rs.getString("email"));
+                        utilisateur.setLogin(rs.getString("login"));
+                        // NE PAS stocker le motDePasseHache dans l'objet utilisateur en session
+                        utilisateur.setRole(rs.getString("role"));
+                        utilisateur.setSexe(rs.getString("sexe")); // Assure-toi de le récupérer
+                        // ... mapper les autres champs nécessaires de l'utilisateur ...
+                        System.out.println("UtilisateurDAO.authentifier: Utilisateur trouvé et mot de passe vérifié pour ID: " + utilisateur.getId());
+                    } else {
+                        // Mot de passe incorrect ou pas de hachage en BDD ou motDePasseInput est null
+                        System.out.println("UtilisateurDAO.authentifier: Login trouvé, mais mot de passe incorrect, ou hachage BDD/input manquant.");
+                        System.out.println("    Hachage BDD: [" + hashedPasswordFromDB + "]"); // Pour débogage
+                        // NE PAS loguer motDePasseInput en production
+                    }
+                } else {
+                    // Aucun utilisateur trouvé pour ce login
+                    System.out.println("UtilisateurDAO.authentifier: Aucun utilisateur trouvé pour le login: " + loginInput.trim());
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            System.err.println("UtilisateurDAO.authentifier: SQLException - " + e.getMessage());
+            e.printStackTrace(); // Logguer l'erreur SQL
+            throw e; // Relancer l'exception pour que la couche appelante (servlet) puisse la gérer
+        } catch (Exception e) { // Attraper d'autres exceptions potentielles (ex: IllegalArgumentException de BCrypt)
+             System.err.println("UtilisateurDAO.authentifier: Exception - " + e.getMessage());
             e.printStackTrace();
-        } finally {
-            try { if (rs != null) rs.close(); } catch (Exception e) {}
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
+            // Tu pourrais envelopper cela dans une SQLException ou une exception personnalisée
+            throw new SQLException("Erreur inattendue pendant l'authentification.", e);
         }
-
         return utilisateur;
     }
-    
-    public boolean existeLogin(String login) {
-        boolean existe = false;
 
-        try (Connection conn = Database.getConnection()) {
-            String sql = "SELECT id FROM utilisateur WHERE login = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, login);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                existe = true; // Un utilisateur avec ce login existe déjà
-            }
-
-            rs.close();
-            stmt.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return existe;
-    }
  
    
 

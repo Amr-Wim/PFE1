@@ -7,7 +7,18 @@ public class Utilisateur {
     private String prenom;
     private String email;
     private String sexe; 
-    public Utilisateur(int id, String nom, String prenom, String email, String sexe, String login, String motDePasse,
+    private String telephone;
+    
+    
+    public String getTelephone() {
+		return telephone;
+	}
+
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
+	}
+
+	public Utilisateur(int id, String nom, String prenom, String email, String sexe, String login, String motDePasse,
 			String role) {
 		super();
 		this.id = id;
