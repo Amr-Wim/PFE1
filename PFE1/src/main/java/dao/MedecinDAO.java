@@ -164,4 +164,40 @@ public class MedecinDAO {
         } // La connexion et le PreparedStatement sont fermés automatiquement ici
         return medecin;
     }
+    
+    public Medecin getMedecinWithDetailsById(int medecinId) throws SQLException {
+        Medecin medecin = null;
+        String sql = "SELECT u.id, u.nom, u.prenom, u.email, u.sexe, " + // Champs de utilisateur
+                     "m.specialite, m.Grade, m.Numero_Ordre " +          // Champs de medecin
+                     "FROM utilisateur u " +
+                     "JOIN medecin m ON u.id = m.ID_Medecin " +
+                     "WHERE u.id = ? AND u.role = 'medecin'";
+
+        System.out.println("MedecinDAO.getMedecinWithDetailsById - SQL: " + sql + " pour ID: " + medecinId);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, medecinId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    medecin = new Medecin();
+                    medecin.setId(rs.getInt("id"));
+                    medecin.setNom(rs.getString("nom"));
+                    medecin.setPrenom(rs.getString("prenom"));
+                    medecin.setEmail(rs.getString("email"));
+                    medecin.setSexe(rs.getString("sexe"));
+                    // Champs spécifiques au médecin
+                    medecin.setSpecialite(rs.getString("specialite"));
+                    medecin.setGrade(rs.getString("Grade"));
+                    medecin.setNumeroOrdre(rs.getString("Numero_Ordre"));
+                    // Note: nomService et nomHopital ne sont pas chargés par cette méthode,
+                    // mais par getMedecinWithServiceAndHopital. Pour le PDF, la spécialité est souvent suffisante.
+                    System.out.println("MedecinDAO: Détails médecin chargés - " + medecin.getNom() + ", Spécialité: " + medecin.getSpecialite());
+                } else {
+                    System.out.println("MedecinDAO.getMedecinWithDetailsById - Aucun médecin trouvé pour ID: " + medecinId);
+                }
+            }
+        }
+        return medecin;
+    }
 }

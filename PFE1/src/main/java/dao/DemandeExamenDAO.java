@@ -78,55 +78,85 @@ public class DemandeExamenDAO {
 	        return stmt.executeUpdate() > 0;
 	    }
 	}
-	public List<DemandeExamen> getDemandesByPatientId(int patientId) throws SQLException {
-	    List<DemandeExamen> demandes = new ArrayList<>();
-	    String sql = "SELECT de.*, e.id as e_id, e.nom_examen, e.doit_etre_a_jeun, "
-	               + "e.duree_preparation_resultats_heures, e.instructions_preparatoires, "
-	               + "te.id as te_id, te.nom_type "
-	               + "FROM DemandeExamen de "
-	               + "JOIN Examen e ON de.id_examen = e.id "
-	               + "JOIN TypeExamen te ON e.id_type_examen = te.id "
-	               + "WHERE de.id_patient = ? "
-	               + "ORDER BY de.date_demande DESC";
+	
+	
+	
+	public List<DemandeExamen> getDemandesParHospitalisation(int hospitalisationId) throws SQLException {
+        List<DemandeExamen> demandes = new ArrayList<>();
+        // Jointure avec la table examen pour obtenir nom_examen
+        // Assure-toi que les noms de table et de colonnes sont corrects (demandeexamen, examen)
+        String sql = "SELECT de.*, e.nom_examen " +
+                     "FROM demandeexamen de " +
+                     "JOIN examen e ON de.id_examen = e.id " +
+                     "WHERE de.ID_Hospitalisation = ? ORDER BY de.date_demande ASC";
 
-	    try (Connection conn = Database.getConnection();
-	         PreparedStatement stmt = conn.prepareStatement(sql)) {
-	        
-	        stmt.setInt(1, patientId);
-	        System.out.println("DEBUG - Executing query: " + stmt.toString());
-	        
-	        try (ResultSet rs = stmt.executeQuery()) {
-	            while (rs.next()) {
-	                DemandeExamen demande = new DemandeExamen();
-	                // Remplissage des champs de base
-	                demande.setId(rs.getInt("id"));
-	                demande.setDateDemande(rs.getDate("date_demande"));
-	                demande.setDateEstimeeResultatsPrets(rs.getDate("date_estimee_resultats_prets"));
-	                demande.setNotesMedecin(rs.getString("notes_medecin"));
-	                demande.setStatutDemande(rs.getString("statut_demande"));
-	                
-	                // Création de l'objet Examen
-	                Examen examen = new Examen();
-	                examen.setId(rs.getInt("e_id"));
-	                examen.setNomExamen(rs.getString("nom_examen"));
-	                examen.setDoitEtreAJeun(rs.getBoolean("doit_etre_a_jeun"));
-	                examen.setDureePreparationResultatsHeures(rs.getObject("duree_preparation_resultats_heures") != null ? 
-	                    rs.getInt("duree_preparation_resultats_heures") : null);
-	                examen.setInstructionsPreparatoires(rs.getString("instructions_preparatoires"));
-	                
-	                // Création du TypeExamen
-	                TypeExamen type = new TypeExamen();
-	                type.setId(rs.getInt("te_id"));
-	                type.setNomType(rs.getString("nom_type"));
-	                
-	                examen.setTypeExamen(type);
-	                demande.setExamen(examen);
-	                
-	                demandes.add(demande);
-	                System.out.println("DEBUG - Added exam: " + examen.getNomExamen());
-	            }
-	        }
-	    }
-	    return demandes;
-	}
-	}
+        System.out.println("DemandeExamenDAO.getDemandesParHospitalisation - SQL: " + sql + " pour HospID: " + hospitalisationId);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, hospitalisationId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    DemandeExamen de = new DemandeExamen();
+                    de.setId(rs.getInt("id"));
+                    de.setIdPatient(rs.getInt("id_patient"));
+                    de.setIdMedecinPrescripteur(rs.getInt("id_medecin_prescripteur"));
+                    de.setIdExamen(rs.getInt("id_examen"));
+                    de.setDateDemande(rs.getDate("date_demande"));
+                    de.setStatutDemande(rs.getString("statut_demande"));
+                    de.setNotesMedecin(rs.getString("notes_medecin"));
+                    // ... mapper les autres champs de la table demandeexamen ...
+                    de.setIdHospitalisation(rs.getInt("ID_Hospitalisation")); // Champ que tu as ajouté
+
+                    // Créer et setter l'objet Examen associé
+                    Examen ex = new Examen(); // Tu dois avoir un modèle model.Examen.java
+                    ex.setId(rs.getInt("id_examen"));
+                    ex.setNomExamen(rs.getString("nom_examen"));
+                    de.setExamen(ex); // Tu dois avoir un setExamen(Examen ex) dans model.DemandeExamen.java
+
+                    demandes.add(de);
+                }
+            }
+        }
+        System.out.println("DemandeExamenDAO.getDemandesParHospitalisation - " + demandes.size() + " demandes trouvées.");
+        return demandes;
+    }
+     // Méthode pour lister les demandes par patient (utilisée dans LoginServlet)
+ public List<DemandeExamen> getDemandesByPatientId(int patientId) throws SQLException {
+     List<DemandeExamen> demandes = new ArrayList<>();
+     String sql = "SELECT de.*, e.nom_examen " +
+                  "FROM demandeexamen de " +
+                  "JOIN examen e ON de.id_examen = e.id " +
+                  "WHERE de.id_patient = ? ORDER BY de.date_demande DESC";
+     try (Connection conn = Database.getConnection();
+          PreparedStatement pstmt = conn.prepareStatement(sql)) {
+         pstmt.setInt(1, patientId);
+         try (ResultSet rs = pstmt.executeQuery()) {
+             while (rs.next()) {
+                 DemandeExamen de = new DemandeExamen();
+                 de.setId(rs.getInt("id"));
+                 de.setIdPatient(rs.getInt("id_patient"));
+                 de.setIdMedecinPrescripteur(rs.getInt("id_medecin_prescripteur"));
+                 de.setIdExamen(rs.getInt("id_examen"));
+                 de.setDateDemande(rs.getDate("date_demande"));
+                 de.setStatutDemande(rs.getString("statut_demande"));
+                 de.setNotesMedecin(rs.getString("notes_medecin"));
+                 // ... autres champs ...
+                 int idHosp = rs.getInt("ID_Hospitalisation");
+                 if(!rs.wasNull()){
+                     de.setIdHospitalisation(idHosp);
+                 }
+
+                 Examen ex = new Examen();
+                 ex.setId(rs.getInt("id_examen"));
+                 ex.setNomExamen(rs.getString("nom_examen"));
+                 de.setExamen(ex);
+                 demandes.add(de);
+             }
+         }
+     }
+     return demandes;
+ }
+
+}
+

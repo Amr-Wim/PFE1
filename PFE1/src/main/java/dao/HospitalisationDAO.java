@@ -1,24 +1,24 @@
 package dao;
 
-import model.Hospitalisation; // Assure-toi que le modèle Hospitalisation est bien celui avec les nouveaux champs transitoires
-import model.Medecin; // Si tu charges l'objet médecin ici
+import model.Hospitalisation;
+import model.Medecin;
+import model.Patient; // Ajouté pour la méthode getHospitalisationsEnCoursParMedecin
 import util.Database; // Ta classe de connexion
 
-import java.sql.*;
+import java.sql.*; // Import général pour les types SQL
 import java.util.ArrayList;
 import java.util.List;
 
 public class HospitalisationDAO {
 
-    // insertHospitalisation, getById, updateHospitalisation restent comme tu les as fournies
-    // (en s'assurant qu'elles gèrent lit_id et non chambre_id)
-
     public boolean insertHospitalisation(Hospitalisation hosp) throws SQLException {
-        String sql = "INSERT INTO hospitalisation (ID_Patient, nom_hopital, service, duree, etat, ID_Medecin, motif, Diagnostic_Initial, Date_Sortie_Prevue, lit_id, date_admission) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE())";
+        String sql = "INSERT INTO hospitalisation (ID_Patient, nom_hopital, service, duree, etat, ID_Medecin, motif, " +
+                     "Diagnostic_Initial, Date_Sortie_Prevue, lit_id, date_admission, " +
+                     "compte_rendu_hospitalisation, instructions_sortie, diagnostics_de_sortie, informations_rendez_vous_suivi, Date_Sortie_Reelle) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), ?, ?, ?, ?, ?)";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            // ... (ton code de mapping des paramètres est correct) ...
+
             pstmt.setInt(1, hosp.getIdPatient());
             pstmt.setString(2, hosp.getNomHopital());
             pstmt.setString(3, hosp.getService());
@@ -27,12 +27,19 @@ public class HospitalisationDAO {
             pstmt.setInt(6, hosp.getIdMedecin());
             pstmt.setString(7, hosp.getMotif());
             pstmt.setString(8, hosp.getDiagnosticInitial());
-            pstmt.setDate(9, hosp.getDateSortiePrevue()); // Doit être java.sql.Date
+            pstmt.setDate(9, hosp.getDateSortiePrevue()); // java.sql.Date
+
             if (hosp.getLitId() != null && hosp.getLitId() > 0) {
                 pstmt.setInt(10, hosp.getLitId());
             } else {
                 pstmt.setNull(10, java.sql.Types.INTEGER);
             }
+            // Les nouveaux champs texte pour la sortie, initialement null ou vides
+            pstmt.setString(11, hosp.getCompteRenduHospitalisation());
+            pstmt.setString(12, hosp.getInstructionsSortie());
+            pstmt.setString(13, hosp.getDiagnosticsSortie());
+            pstmt.setString(14, hosp.getInformationsRendezVousSuivi());
+            pstmt.setTimestamp(15, hosp.getDateSortieReelle()); // java.sql.Timestamp
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -48,16 +55,18 @@ public class HospitalisationDAO {
     }
 
     public Hospitalisation getById(int hospitalisationId) throws SQLException {
-        String sql = "SELECT h.*, " +
+        // Jointure pour récupérer toutes les infos, y compris les détails du lit/chambre et médecin
+        // La requête SQL dans ton code était déjà bien pour cela.
+         String sql = "SELECT h.*, " +
                      "l.id as id_du_lit, " +
                      "ch.numero as numero_chambre, " +
                      "s_ch.Nom_Service_FR as nom_service_chambre, " +
                      "u_med.nom as nom_medecin, u_med.prenom as prenom_medecin " +
                      "FROM hospitalisation h " +
                      "LEFT JOIN lit l ON h.lit_id = l.id " +
-                     "LEFT JOIN chambre ch ON l.chambre_id = ch.id " + // l.chambre_id au lieu de h.chambre_id
+                     "LEFT JOIN chambre ch ON l.chambre_id = ch.id " +
                      "LEFT JOIN service s_ch ON ch.id_service = s_ch.ID_Service " +
-                     "LEFT JOIN medecin med ON h.ID_Medecin = med.ID_Medecin " + // Pour récupérer le nom du médecin
+                     "LEFT JOIN medecin med ON h.ID_Medecin = med.ID_Medecin " +
                      "LEFT JOIN utilisateur u_med ON med.ID_Medecin = u_med.id " +
                      "WHERE h.ID_Hospitalisation = ?";
         Hospitalisation hosp = null;
@@ -66,72 +75,107 @@ public class HospitalisationDAO {
             pstmt.setInt(1, hospitalisationId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    hosp = mapRowToHospitalisation(rs); // Utiliser une méthode de mapping
+                    hosp = mapRowToHospitalisation(rs);
                 }
             }
         }
         return hosp;
     }
     
-    public boolean updateLitIdForHospitalisation(int hospitalisationId, Integer nouveauLitId) throws SQLException {
-        // Si nouveauLitId est null, on mettra NULL dans la BDD, sinon la valeur de l'ID.
-        String sql = "UPDATE hospitalisation SET lit_id = ? WHERE ID_Hospitalisation = ?";
-        System.out.println("HospitalisationDAO.updateLitIdForHospitalisation - SQL: " + sql + " Params: nouveauLitId=" + nouveauLitId + ", hospitalisationId=" + hospitalisationId);
+    // Tu avais une méthode updateHospitalisation et une méthode updateInfosSortieHospitalisation.
+    // Il est préférable d'avoir une seule méthode updateHospitalisation complète si l'objet hosp contient toujours toutes les infos à jour.
+    // Ou une méthode très ciblée si tu ne mets à jour que certains champs.
+    // Je vais modifier updateHospitalisation pour être plus complète.
 
-        try (Connection conn = Database.getConnection(); // Assure-toi d'avoir ta classe DatabaseConnection
+    public boolean updateHospitalisation(Hospitalisation hosp) throws SQLException {
+        String sql = "UPDATE hospitalisation SET " +
+                     "ID_Patient = ?, nom_hopital = ?, service = ?, duree = ?, etat = ?, ID_Medecin = ?, " +
+                     "motif = ?, Diagnostic_Initial = ?, Date_Sortie_Prevue = ?, lit_id = ?, " +
+                     "compte_rendu_hospitalisation = ?, instructions_sortie = ?, diagnostics_de_sortie = ?, " +
+                     "informations_rendez_vous_suivi = ?, Date_Sortie_Reelle = ? " + // Date_Sortie_Reelle est la dernière
+                     "WHERE ID_Hospitalisation = ?";
+        System.out.println("HospitalisationDAO.updateHospitalisation - SQL: " + sql + " pour ID: " + hosp.getId());
+
+        try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            if (nouveauLitId != null && nouveauLitId > 0) {
-                pstmt.setInt(1, nouveauLitId);
+            pstmt.setInt(1, hosp.getIdPatient());
+            pstmt.setString(2, hosp.getNomHopital());
+            pstmt.setString(3, hosp.getService());
+            pstmt.setString(4, hosp.getDuree());
+            pstmt.setString(5, hosp.getEtat());
+            pstmt.setInt(6, hosp.getIdMedecin());
+            pstmt.setString(7, hosp.getMotif());
+            pstmt.setString(8, hosp.getDiagnosticInitial());
+            pstmt.setDate(9, hosp.getDateSortiePrevue()); // java.sql.Date
+
+            if (hosp.getLitId() != null && hosp.getLitId() > 0) {
+                pstmt.setInt(10, hosp.getLitId());
             } else {
-                pstmt.setNull(1, java.sql.Types.INTEGER); // Permet de dé-assigner un lit si nécessaire
+                pstmt.setNull(10, java.sql.Types.INTEGER);
             }
-            pstmt.setInt(2, hospitalisationId);
+
+            pstmt.setString(11, hosp.getCompteRenduHospitalisation());
+            pstmt.setString(12, hosp.getInstructionsSortie());
+            pstmt.setString(13, hosp.getDiagnosticsSortie());
+            pstmt.setString(14, hosp.getInformationsRendezVousSuivi());
+            pstmt.setTimestamp(15, hosp.getDateSortieReelle()); // *** CORRECTION ICI: utiliser setTimestamp ***
+
+            pstmt.setInt(16, hosp.getId()); // Pour la clause WHERE
 
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         }
     }
+    
+    public boolean updateLitIdForHospitalisation(int hospitalisationId, Integer nouveauLitId) throws SQLException {
+        String sql = "UPDATE hospitalisation SET lit_id = ? WHERE ID_Hospitalisation = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            if (nouveauLitId != null && nouveauLitId > 0) {
+                pstmt.setInt(1, nouveauLitId);
+            } else {
+                pstmt.setNull(1, java.sql.Types.INTEGER);
+            }
+            pstmt.setInt(2, hospitalisationId);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
 
     public Hospitalisation getCurrentByPatientId(int patientId) throws SQLException {
-        String sql = "SELECT h.*, " + // Tous les champs de hospitalisation
-                     "l.id as id_du_lit, " + // Pour le numeroLit, on peut utiliser l'ID du lit
+        // La requête que tu avais est bonne, on s'assure juste que mapRowToHospitalisation est correcte.
+        String sql = "SELECT h.*, " +
+                     "l.id as id_du_lit, " +
                      "ch.numero as numero_chambre, " +
-                     "s_ch.Nom_Service_FR as nom_service_chambre, " + // s_ch est l'alias pour service de la chambre
-                     "u_med.nom as nom_medecin, u_med.prenom as prenom_medecin " + // Pour l'objet Medecin
+                     "s_ch.Nom_Service_FR as nom_service_chambre, " +
+                     "u_med.nom as nom_medecin, u_med.prenom as prenom_medecin " +
                      "FROM hospitalisation h " +
                      "LEFT JOIN lit l ON h.lit_id = l.id " +
-                     "LEFT JOIN chambre ch ON l.chambre_id = ch.id " + // Correction: l.chambre_id
+                     "LEFT JOIN chambre ch ON l.chambre_id = ch.id " +
                      "LEFT JOIN service s_ch ON ch.id_service = s_ch.ID_Service " +
-                     "LEFT JOIN medecin med ON h.ID_Medecin = med.ID_Medecin " + // Jointure pour l'objet Medecin
-                     "LEFT JOIN utilisateur u_med ON med.ID_Medecin = u_med.id " + // Jointure pour l'objet Medecin
+                     "LEFT JOIN medecin med ON h.ID_Medecin = med.ID_Medecin " +
+                     "LEFT JOIN utilisateur u_med ON med.ID_Medecin = u_med.id " +
                      "WHERE h.ID_Patient = ? AND h.etat = 'En cours' " +
                      "ORDER BY h.date_admission DESC LIMIT 1";
-
         Hospitalisation hosp = null;
-        System.out.println("HospitalisationDAO.getCurrentByPatientId - SQL: " + sql + " avec ID_Patient: " + patientId);
-
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, patientId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    hosp = mapRowToHospitalisation(rs); // Utiliser la méthode de mapping
-                } else {
-                    System.out.println("HospitalisationDAO.getCurrentByPatientId - Aucune hospitalisation en cours trouvée pour patient ID: " + patientId);
+                    hosp = mapRowToHospitalisation(rs);
                 }
             }
         }
         return hosp;
     }
 
-    // Méthode utilitaire de mapping
     private Hospitalisation mapRowToHospitalisation(ResultSet rs) throws SQLException {
         Hospitalisation hosp = new Hospitalisation();
         hosp.setId(rs.getInt("ID_Hospitalisation"));
         hosp.setIdPatient(rs.getInt("ID_Patient"));
         hosp.setNomHopital(rs.getString("nom_hopital"));
-        hosp.setService(rs.getString("service")); // Service de l'hospitalisation
+        hosp.setService(rs.getString("service"));
         hosp.setDuree(rs.getString("duree"));
         hosp.setEtat(rs.getString("etat"));
         hosp.setIdMedecin(rs.getInt("ID_Medecin"));
@@ -139,88 +183,141 @@ public class HospitalisationDAO {
         hosp.setDiagnosticInitial(rs.getString("Diagnostic_Initial"));
         hosp.setDateAdmission(rs.getDate("date_admission"));
         hosp.setDateSortiePrevue(rs.getDate("Date_Sortie_Prevue"));
-        hosp.setDateSortieReelle(rs.getDate("Date_Sortie_Reelle"));
+        hosp.setDateSortieReelle(rs.getTimestamp("Date_Sortie_Reelle")); // *** CORRECTION ICI: utiliser getTimestamp ***
 
         int litIdFromDB = rs.getInt("lit_id");
         if (!rs.wasNull()) {
             hosp.setLitId(litIdFromDB);
-            // Si tu as une colonne 'numero' dans la table 'lit', tu la récupérerais ici.
-            // Sinon, on peut juste utiliser l'ID du lit comme "numéro".
-            hosp.setNumeroLit("Lit N°" + rs.getInt("id_du_lit")); // Ou rs.getString("colonne_numero_lit")
+            hosp.setNumeroLit("Lit N°" + rs.getInt("id_du_lit")); // Assumant que 'id_du_lit' est l'alias pour l.id
             hosp.setNumeroChambre(rs.getString("numero_chambre"));
             hosp.setNomServiceChambre(rs.getString("nom_service_chambre"));
-            System.out.println("HospitalisationDAO (mapRow): Lit ID " + hosp.getLitId() + ", Chambre " + hosp.getNumeroChambre() + " dans service " + hosp.getNomServiceChambre());
-        } else {
-            System.out.println("HospitalisationDAO (mapRow): Aucune information de lit/chambre car lit_id est null pour hosp ID " + hosp.getId());
         }
 
-        // Charger l'objet Medecin si ID_Medecin est présent
+        // Champs de sortie ajoutés à la table hospitalisation
+        hosp.setCompteRenduHospitalisation(rs.getString("compte_rendu_hospitalisation"));
+        hosp.setInstructionsSortie(rs.getString("instructions_sortie"));
+        hosp.setDiagnosticsSortie(rs.getString("diagnostics_de_sortie"));
+        hosp.setInformationsRendezVousSuivi(rs.getString("informations_rendez_vous_suivi"));
+
         if (hosp.getIdMedecin() > 0) {
-            Medecin medecin = new Medecin();
-            medecin.setId(hosp.getIdMedecin());
-            // Les noms du médecin sont récupérés par la jointure et peuvent être directement settés ici
-            // si l'objet Medecin a des setters pour nom et prenom.
-            // Ou tu peux juste stocker nom/prenom dans des champs transitoires de Hospitalisation.
-            // Pour l'instant, on va supposer que Medecin a setNom/setPrenom.
-            // Ces champs viennent de u_med.nom et u_med.prenom dans la requête
             String nomMedecin = rs.getString("nom_medecin");
             String prenomMedecin = rs.getString("prenom_medecin");
-            if(nomMedecin != null && prenomMedecin != null) {
+            if (nomMedecin != null && prenomMedecin != null) {
+                Medecin medecin = new Medecin();
+                medecin.setId(hosp.getIdMedecin());
                 medecin.setNom(nomMedecin);
                 medecin.setPrenom(prenomMedecin);
-                // Tu pourrais aussi setter d'autres infos du médecin si tu les as jointes
+                // Tu pourrais charger d'autres infos du médecin ici si nécessaire (ex: spécialité)
+                // si elles sont sélectionnées par la requête SQL.
                 hosp.setMedecin(medecin);
             }
+            
+            System.out.println("DEBUG DAO mapRow: État lu depuis BDD: [" + rs.getString("etat") + "]"); 
         }
         return hosp;
     }
     
- // Dans dao/HospitalisationDAO.java
+    public List<Hospitalisation> getHospitalisationsEnCoursParMedecin(int idMedecin) throws SQLException {
+        List<Hospitalisation> hospitalisations = new ArrayList<>();
+        String sql = "SELECT " +
+                     "h.ID_Hospitalisation, h.ID_Patient, h.date_admission, h.motif, h.duree, h.service, " +
+                     "u.nom as patient_nom, u.prenom as patient_prenom, u.cin as patient_cin, " +
+                     "l.id as lit_numero_id, " +
+                     "c.numero as chambre_numero " +
+                     "FROM hospitalisation h " +
+                     "JOIN utilisateur u ON h.ID_Patient = u.id " +
+                     "LEFT JOIN lit l ON h.lit_id = l.id " +
+                     "LEFT JOIN chambre c ON l.chambre_id = c.id " + // jointure sur lit.chambre_id
+                     "WHERE h.ID_Medecin = ? AND h.etat = 'En cours' " +
+                     "ORDER BY u.nom ASC, u.prenom ASC, h.date_admission DESC";
+    
+        System.out.println("HospitalisationDAO.getHospitalisationsEnCoursParMedecin - SQL: " + sql + " pour Medecin ID: " + idMedecin);
 
- // ... (vos autres méthodes insertHospitalisation, getById, getCurrentByPatientId, mapRowToHospitalisation, updateLitIdForHospitalisation) ...
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idMedecin);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Hospitalisation hosp = new Hospitalisation();
+                    hosp.setId(rs.getInt("ID_Hospitalisation"));
+                    hosp.setIdPatient(rs.getInt("ID_Patient"));
+                    hosp.setDateAdmission(rs.getDate("date_admission"));
+                    hosp.setMotif(rs.getString("motif"));
+                    hosp.setDuree(rs.getString("duree"));
+                    hosp.setService(rs.getString("service"));
 
- public boolean updateHospitalisation(Hospitalisation hosp) throws SQLException {
-     // Quels champs sont modifiables ?
-     // Probablement : etat, duree, Diagnostic_Initial, Date_Sortie_Prevue, Date_Sortie_Reelle, lit_id (géré par updateLitIdForHospitalisation)
-     // ID_Patient, ID_Medecin, nom_hopital, service, motif, date_admission sont généralement fixés à la création.
-     // Adaptez la requête SQL en fonction des champs que vous voulez permettre de modifier.
+                    hosp.setPatientNom(rs.getString("patient_nom"));
+                    hosp.setPatientPrenom(rs.getString("patient_prenom"));
+                    hosp.setPatientCin(rs.getString("patient_cin"));
+                 
+                    int litId = rs.getInt("lit_numero_id");
+                    if (!rs.wasNull()) {
+                        hosp.setLitId(litId);
+                        hosp.setNumeroLit("Lit N°" + litId);
+                        hosp.setNumeroChambre(rs.getString("chambre_numero"));
+                    }
+                    hospitalisations.add(hosp);
+                }
+            }
+        }
+        System.out.println("HospitalisationDAO.getHospitalisationsEnCoursParMedecin - " + hospitalisations.size() + " hospitalisations trouvées.");
+        return hospitalisations;
+    }
+ 
+    // Cette méthode est celle appelée par PreparerSortieServlet.doPost
+    // Elle doit mettre à jour les champs spécifiques à la sortie et l'état.
+    public boolean updateInfosSortieHospitalisation(Hospitalisation hosp) throws SQLException {
+        String sql = "UPDATE hospitalisation SET " +
+                     "Date_Sortie_Reelle = ?, " +
+                     "etat = ?, " +
+                     "compte_rendu_hospitalisation = ?, " +
+                     "instructions_sortie = ?, " +
+                     "diagnostics_de_sortie = ?, " +
+                     "informations_rendez_vous_suivi = ? " +
+                     "WHERE ID_Hospitalisation = ?";
+        System.out.println("HospitalisationDAO.updateInfosSortieHospitalisation pour ID: " + hosp.getId());
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-     String sql = "UPDATE hospitalisation SET " +
-                  "duree = ?, " +
-                  "etat = ?, " +
-                  "Diagnostic_Initial = ?, " +
-                  "Date_Sortie_Prevue = ?, " +
-                  "Date_Sortie_Reelle = ?, " + // Ajout de Date_Sortie_Reelle
-                  "lit_id = ? " + // On inclut lit_id ici aussi, même s'il y a une méthode dédiée, pour une màj complète
-                  "WHERE ID_Hospitalisation = ?";
+            pstmt.setTimestamp(1, hosp.getDateSortieReelle()); // *** UTILISER setTimestamp ***
+            pstmt.setString(2, hosp.getEtat()); // Doit être "Sortie"
+            pstmt.setString(3, hosp.getCompteRenduHospitalisation());
+            pstmt.setString(4, hosp.getInstructionsSortie());
+            pstmt.setString(5, hosp.getDiagnosticsSortie());
+            pstmt.setString(6, hosp.getInformationsRendezVousSuivi());
+            pstmt.setInt(7, hosp.getId());
 
-     System.out.println("HospitalisationDAO.updateHospitalisation - SQL: " + sql + " pour ID_Hospitalisation: " + hosp.getId());
-
-     try (Connection conn = Database.getConnection();
-          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-         pstmt.setString(1, hosp.getDuree());
-         pstmt.setString(2, hosp.getEtat());
-         pstmt.setString(3, hosp.getDiagnosticInitial());
-         pstmt.setDate(4, hosp.getDateSortiePrevue());     // java.sql.Date
-         pstmt.setDate(5, hosp.getDateSortieReelle());   // java.sql.Date
-         
-         if (hosp.getLitId() != null && hosp.getLitId() > 0) {
-             pstmt.setInt(6, hosp.getLitId());
-         } else {
-             pstmt.setNull(6, java.sql.Types.INTEGER);
-         }
-         
-         pstmt.setInt(7, hosp.getId()); // Pour la clause WHERE
-
-         int affectedRows = pstmt.executeUpdate();
-         if (affectedRows > 0) {
-             System.out.println("HospitalisationDAO.updateHospitalisation - Mise à jour réussie pour ID: " + hosp.getId());
-             return true;
-         } else {
-             System.out.println("HospitalisationDAO.updateHospitalisation - Aucune ligne mise à jour pour ID: " + hosp.getId() + " (peut-être n'existait-elle pas ou les valeurs étaient identiques).");
-             return false; // Aucune ligne affectée, ou l'enregistrement n'existait pas.
-         }
-     }
- }
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+    
+ // Dans dao.HospitalisationDAO.java
+    public Hospitalisation getLatestHospitalisationByPatientIdWithDetails(int patientId) throws SQLException {
+        String sql = "SELECT h.*, " +
+                     "l.id as id_du_lit, ch.numero as numero_chambre, s_ch.Nom_Service_FR as nom_service_chambre, " +
+                     "u_med.nom as nom_medecin, u_med.prenom as prenom_medecin " +
+                     "FROM hospitalisation h " +
+                     "LEFT JOIN lit l ON h.lit_id = l.id " +
+                     "LEFT JOIN chambre ch ON l.chambre_id = ch.id " +
+                     "LEFT JOIN service s_ch ON ch.id_service = s_ch.ID_Service " +
+                     "LEFT JOIN medecin med ON h.ID_Medecin = med.ID_Medecin " +
+                     "LEFT JOIN utilisateur u_med ON med.ID_Medecin = u_med.id " +
+                     "WHERE h.ID_Patient = ? " + // PAS DE FILTRE SUR h.etat
+                     "ORDER BY h.date_admission DESC, h.ID_Hospitalisation DESC LIMIT 1"; // Prend la plus récente
+        Hospitalisation hosp = null;
+        System.out.println("HospitalisationDAO.getLatestHospitalisationByPatientIdWithDetails - SQL: " + sql + " pour Patient ID: " + patientId);
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, patientId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    hosp = mapRowToHospitalisation(rs); // Utilise ta méthode de mapping existante
+                    System.out.println("HospitalisationDAO.getLatestHospitalisationByPatientIdWithDetails - Hospitalisation trouvée ID: " + hosp.getId() + ", État: " + hosp.getEtat());
+                } else {
+                     System.out.println("HospitalisationDAO.getLatestHospitalisationByPatientIdWithDetails - Aucune hospitalisation trouvée pour Patient ID: " + patientId);
+                }
+            }
+        }
+        return hosp;
+    }
 }

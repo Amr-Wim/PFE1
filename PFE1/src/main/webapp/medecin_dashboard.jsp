@@ -168,6 +168,8 @@
         <a class="nav-link text-white d-flex align-items-center gap-1" href="PrescriptionMedicale.jsp">
           <i class="fas fa-pills"></i><span>Préscriptions</span>
         </a>
+        
+         <a class="nav-link text-white" href="medecin/mesHospitalisations">Planification des sorties</a>
       </nav>
 
       <!-- Déconnexion -->

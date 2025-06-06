@@ -19,7 +19,18 @@ public class DemandeExamen {
     private Date dateCreation; // Automatiquement géré par la DB
     private Date dateModification; // Automatiquement géré par la DB
     
-    private Examen examen;
+    private int idHospitalisation;
+    
+    
+    public int getIdHospitalisation() {
+		return idHospitalisation;
+	}
+
+	public void setIdHospitalisation(int idHospitalisation) {
+		this.idHospitalisation = idHospitalisation;
+	}
+
+	private Examen examen;
 
     public Examen getExamen() {
 		return examen;

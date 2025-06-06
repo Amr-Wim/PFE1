@@ -69,7 +69,7 @@
             <a class="nav-link active text-white" href="${pageContext.request.contextPath}/adminDashboard">Tableau de bord</a>
             <a class="nav-link text-white" href="creerUtilisateur.jsp">Créer utilisateur</a>
             <a class="nav-link text-white" href="changerLit">Affectation des chambres</a>
-            <a class="nav-link text-white" href="planification_sortie.jsp">Planification des sorties</a>
+           
             
              <!-- BOUTON DECONNEXION -->
             <form action="Logout" method="post" style="margin: 0;">

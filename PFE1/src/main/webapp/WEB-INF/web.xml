@@ -145,4 +145,24 @@
     <servlet-name>AdminDashboardServlet</servlet-name>
     <url-pattern>/AdminDashboardServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ListeHospitalisationsMedecinServlet</display-name>
+    <servlet-name>ListeHospitalisationsMedecinServlet</servlet-name>
+    <servlet-class>controllers.ListeHospitalisationsMedecinServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ListeHospitalisationsMedecinServlet</servlet-name>
+    <url-pattern>/ListeHospitalisationsMedecinServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>PreparerSortieServlet</display-name>
+    <servlet-name>PreparerSortieServlet</servlet-name>
+    <servlet-class>controllers.PreparerSortieServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PreparerSortieServlet</servlet-name>
+    <url-pattern>/PreparerSortieServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

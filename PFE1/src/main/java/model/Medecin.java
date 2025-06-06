@@ -1,87 +1,31 @@
-
-
 package model;
 
 public class Medecin extends Utilisateur {
     private String specialite;
     private String grade;
     private int idService;
-    private String statut;
+    private String statut; // Statut spécifique du médecin ('Disponible', 'En congé', etc.)
     private String numeroOrdre;
-    private String nomService; // Ajouté pour faciliter l'affichage
-    private String nomHopital; // Ajouté pour faciliter l'affichage
+    private String nomService; // Nom du service du médecin (pour affichage)
+    private String nomHopital; // Nom de l'hôpital du médecin (pour affichage)
 
-    // Constructeurs
-    public Medecin() {
-        super();
-    }
+    // Constructeurs...
+    public Medecin() { super(); }
 
-    public Medecin(int id, String nom, String prenom, String email, String sexe, 
-                  String login, String motDePasse, String role,
-                  String specialite, String grade, int idService, 
-                  String statut, String numeroOrdre) {
-        super(id, nom, prenom, email, sexe, login, motDePasse, role);
-        this.specialite = specialite;
-        this.grade = grade;
-        this.idService = idService;
-        this.statut = statut;
-        this.numeroOrdre = numeroOrdre;
-    }
-
-    // Getters et Setters
-    public String getSpecialite() {
-        return specialite;
-    }
-
-    public void setSpecialite(String specialite) {
-        this.specialite = specialite;
-    }
-
-    public String getGrade() {
-        return grade;
-    }
-
-    public void setGrade(String grade) {
-        this.grade = grade;
-    }
-
-    public int getIdService() {
-        return idService;
-    }
-
-    public void setIdService(int idService) {
-        this.idService = idService;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
-    public String getNumeroOrdre() {
-        return numeroOrdre;
-    }
-
-    public void setNumeroOrdre(String numeroOrdre) {
-        this.numeroOrdre = numeroOrdre;
-    }
-
-    public String getNomService() {
-        return nomService;
-    }
-
-    public void setNomService(String nomService) {
-        this.nomService = nomService;
-    }
-
-    public String getNomHopital() {
-        return nomHopital;
-    }
-
-    public void setNomHopital(String nomHopital) {
-        this.nomHopital = nomHopital;
-    }
+    // Getters et Setters pour tous les champs...
+    public String getSpecialite() { return specialite; }
+    public void setSpecialite(String specialite) { this.specialite = specialite; }
+    // ... autres getters/setters ...
+    public String getNomService() { return nomService; }
+    public void setNomService(String nomService) { this.nomService = nomService; }
+    public String getNomHopital() { return nomHopital; }
+    public void setNomHopital(String nomHopital) { this.nomHopital = nomHopital; }
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
+    public int getIdService() { return idService; }
+    public void setIdService(int idService) { this.idService = idService; }
+    public String getGrade() { return grade; }
+    public void setGrade(String grade) { this.grade = grade; }
+    public String getNumeroOrdre() { return numeroOrdre; }
+    public void setNumeroOrdre(String numeroOrdre) { this.numeroOrdre = numeroOrdre; }
 }

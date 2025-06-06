@@ -122,7 +122,7 @@
                             <i class="fas fa-file-medical me-1"></i>
                             <span class="d-none d-lg-inline">Dossier médical</span>
                         </a>
-                        <a class="nav-link text-white hover-effect" href="hospitalisation.jsp">
+                        <a class="nav-link text-white hover-effect" href="patient/hospitalisation">
                             <i class="fas fa-procedures me-1"></i>
                             <span class="d-none d-lg-inline">Hospitalisation</span>
                         </a>
