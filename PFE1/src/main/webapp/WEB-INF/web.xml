@@ -125,4 +125,24 @@
     <servlet-name>NouvelleHospitalisationServlet</servlet-name>
     <url-pattern>/NouvelleHospitalisationServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ChangerLitServlet</display-name>
+    <servlet-name>ChangerLitServlet</servlet-name>
+    <servlet-class>controllers.ChangerLitServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ChangerLitServlet</servlet-name>
+    <url-pattern>/ChangerLitServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AdminDashboardServlet</display-name>
+    <servlet-name>AdminDashboardServlet</servlet-name>
+    <servlet-class>controllers.AdminDashboardServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminDashboardServlet</servlet-name>
+    <url-pattern>/AdminDashboardServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

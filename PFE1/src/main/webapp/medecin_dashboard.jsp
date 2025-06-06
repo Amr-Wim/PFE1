@@ -7,6 +7,11 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- Bootstrap CSS -->
+ 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-8x6yQ1EoE8Is0Q9vZff4Kn8Z4Ofy+HEsf3F9EQoTlf9oZ2KvDdBbSz+ukOfT6+f88l+c1E9KgyGlTYKhwD1F2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     body {
@@ -132,17 +137,49 @@
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="logo-title">
-      <img src="image/image2.png" alt="Logo">
-      <span class="title">CAREPATH</span>
-    </div>
-      <div class="menu-links">
-      <a href="logout.jsp">Se déconnecter</a>
-       <a href="index.jsp">Index</a>
+ <!-- Header -->
+<header style="background-color: #1e3a5f;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center justify-content-between py-2">
+
+      <!-- Logo + titre -->
+      <div class="d-flex align-items-center gap-2">
+        <img src="image/image2.png" alt="Logo CarePath" style="height: 40px;">
+        <span class="fs-4 fw-bold text-white text-uppercase" style="letter-spacing: 1px;">
+          CarePath
+        </span>
       </div>
-  </header>
+
+      <!-- Menu -->
+      <nav class="d-flex align-items-center gap-3">
+       <a class="nav-link text-white d-flex align-items-center gap-1" href="medecin_dashboard.jsp">
+          <i class="fas fa-tachometer-alt me-1"></i><span>Tableau de bord</span>
+        </a>
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="nouvelleHospitalisation.jsp">
+          <i class="fas fa-hospital-user"></i><span>Nouvelle Hospitalisation</span>
+        </a>
+       
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="PlanifierExamen1">
+          <i class="fas fa-calendar-check"></i><span>Plannifier Examens</span>
+        </a>
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="diagnostic.jsp">
+          <i class="fas fa-microscope"></i><span>Diagnostics</span>
+        </a>
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="PrescriptionMedicale.jsp">
+          <i class="fas fa-pills"></i><span>Préscriptions</span>
+        </a>
+      </nav>
+
+      <!-- Déconnexion -->
+      <form action="Logout" method="post" class="m-0">
+        <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center gap-1">
+          <i class="fas fa-sign-out-alt"></i><span>Déconnexion</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
+
 <div class="container">
             <!-- Message de bienvenue -->
             <div class="welcome-message text-center mb-5">
