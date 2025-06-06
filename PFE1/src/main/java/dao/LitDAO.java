@@ -92,4 +92,47 @@ public class LitDAO {
         }
         return lits;
     }
+    
+    public List<Lit> trouverLitDisponiblePourService(int serviceId, String sexePatient, int agePatient) throws SQLException {
+        List<Lit> litsDisponibles = new ArrayList<>();
+        // Jointure avec chambre pour le service, et avec service pour le nom du service (pour affichage)
+        String sql = "SELECT l.id, l.chambre_id, l.sexe_autorise, l.age_min, l.age_max, l.est_occupe, " +
+                     "c.numero as numero_chambre, s.Nom_Service_FR as nom_service_chambre " + // Assurez-vous que les noms de colonnes sont corrects
+                     "FROM lit l " +
+                     "JOIN chambre c ON l.chambre_id = c.id " +
+                     "JOIN service s ON c.id_service = s.ID_Service " + // Assurez-vous que les noms de table/colonne sont corrects
+                     "WHERE c.id_service = ? AND l.est_occupe = FALSE " +
+                     "AND (l.sexe_autorise = 'Mixte' OR l.sexe_autorise = ?) " +
+                     "AND ? BETWEEN l.age_min AND l.age_max " +
+                     "ORDER BY s.Nom_Service_FR, c.numero, l.id ASC"; // Ordre logique
+
+        System.out.println("LitDAO.trouverLitDisponiblePourService - SQL: " + sql + " Params: serviceId=" + serviceId + ", sexe=" + sexePatient + ", age=" + agePatient);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, serviceId);
+            stmt.setString(2, sexePatient);
+            stmt.setInt(3, agePatient);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Lit lit = new Lit();
+                    lit.setId(rs.getInt("id"));
+                    lit.setChambreId(rs.getInt("chambre_id"));
+                    // lit.setNumero(rs.getString("numero_lit_colonne")); // Si vous avez un numéro de lit spécifique
+                    lit.setSexeAutorise(rs.getString("sexe_autorise"));
+                    lit.setAgeMin(rs.getInt("age_min"));
+                    lit.setAgeMax(rs.getInt("age_max"));
+                    lit.setOccupe(rs.getBoolean("est_occupe")); // Sera false ici
+                    // Infos supplémentaires pour l'affichage
+                    lit.setNumeroChambre(rs.getString("numero_chambre"));
+                    lit.setNomServiceChambre(rs.getString("nom_service_chambre"));
+                    litsDisponibles.add(lit);
+                }
+            }
+        }
+        System.out.println("LitDAO.trouverLitDisponiblePourService - " + litsDisponibles.size() + " lits trouvés.");
+        return litsDisponibles;
+    }
 }

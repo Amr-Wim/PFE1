@@ -66,9 +66,9 @@
         
         <!-- Liens de navigation affichés côte à côte -->
         <div class="d-flex gap-3">
-            <a class="nav-link active text-white" href="#">Tableau de bord</a>
+            <a class="nav-link active text-white" href="${pageContext.request.contextPath}/adminDashboard">Tableau de bord</a>
             <a class="nav-link text-white" href="creerUtilisateur.jsp">Créer utilisateur</a>
-            <a class="nav-link text-white" href="Affectation">Affectation des chambres</a>
+            <a class="nav-link text-white" href="changerLit">Affectation des chambres</a>
             <a class="nav-link text-white" href="planification_sortie.jsp">Planification des sorties</a>
             
              <!-- BOUTON DECONNEXION -->
@@ -84,62 +84,98 @@
 
 
 <div class="container mt-5">
-    <h2 class="mb-4">Tableau de bord Administratif</h2>
-    
-    
-    <div class="row" style="gap: 30px; justify-content: center; margin-bottom: 50px;">
-  <div class="col-md-4 stat-card">
-    <div class="stat-title">Lits Occupés</div>
-    <div class="stat-desc">Nombre total de lits occupés dans l'hôpital.</div>
-  </div>
+        <h2 class="mb-4">Tableau de bord Administratif</h2>
 
-  <div class="col-md-4 stat-card">
-    <div class="stat-title">Lits Libres</div>
-    <div class="stat-desc">Nombre total de lits disponibles pour les patients.</div>
-  </div>
-</div>
-    
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger">${error}</div>
+        </c:if>
 
-    
-    <!-- Statistiques d'occupation -->
-    <div class="stat-container">
-        <h3>📊 Statistiques d'occupation des lits</h3>
-        <canvas id="occupationChart" width="400" height="200"></canvas>
+        <div class="row" style="gap: 30px; justify-content: center; margin-bottom: 50px;">
+          <div class="col-md-3 stat-card">
+            <div class="stat-title">Lits Occupés</div>
+            <h2><c:out value="${occupiedLits}"/></h2>
+            <div class="stat-desc">Nombre total de lits actuellement occupés.</div>
+          </div>
+
+          <div class="col-md-3 stat-card">
+            <div class="stat-title">Lits Libres</div>
+             <h2><c:out value="${freeLits}"/></h2>
+            <div class="stat-desc">Nombre total de lits disponibles.</div>
+          </div>
+          
+          <div class="col-md-3 stat-card">
+            <div class="stat-title">Total Lits</div>
+            <h2><c:out value="${totalLits}"/></h2>
+            <div class="stat-desc">Capacité totale en lits de l'établissement.</div>
+          </div>
+        </div>
+
+        <div class="stat-container">
+            <h3>📊 Occupation des Lits</h3>
+            <canvas id="occupationChart" width="400" height="150"></canvas> <%-- Réduit un peu la hauteur --%>
+        </div>
     </div>
-     
-</div>
-<footer>
-     &copy; 2025 - CarePath. Tous droits réservés.
-   </footer>
+
+    <footer class="mt-auto py-3" style="background-color: #1e3a5f; color:white; border-top: 4px solid #7e0021;">
+         <div class="container text-center">
+            © ${java.time.Year.now()} - CarePath. Tous droits réservés.
+         </div>
+    </footer>
 
 <script>
-    var ctx = document.getElementById('occupationChart').getContext('2d');
-    var occupationChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Lits occupés', 'Lits libres'],
-            datasets: [{
-                label: 'Statistiques d\'occupation des lits',
-                data: [${occupiedLits}, ${freeLits}], // Dynamique des données récupérées
-                backgroundColor: ['#007bff', '#28a745'],
-                borderColor: ['#0056b3', '#218838'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+    // S'assurer que les variables sont bien des nombres pour Chart.js
+    var occupiedCount = parseInt('${occupiedLits}') || 0; // || 0 pour éviter NaN si la valeur est vide/invalide
+    var freeCount = parseInt('${freeLits}') || 0;
+
+    if (document.getElementById('occupationChart')) {
+        var ctx = document.getElementById('occupationChart').getContext('2d');
+        var occupationChart = new Chart(ctx, {
+            type: 'bar', // 'pie' ou 'doughnut' sont aussi de bons choix pour ce type de données
+            data: {
+                labels: ['Lits occupés', 'Lits libres'],
+                datasets: [{
+                    label: 'Nombre de Lits',
+                    data: [occupiedCount, freeCount],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)', // Rouge pour occupés
+                        'rgba(75, 192, 192, 0.6)'  // Vert/Bleu pour libres
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true, // Peut être mis à false si tu veux contrôler hauteur/largeur plus librement
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1 // Pour s'assurer que l'échelle Y n'a que des entiers si les nombres sont petits
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true, // Afficher la légende
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition des Lits'
+                    }
                 }
             }
-        }
-    });
+        });
+    } else {
+        console.error("L'élément Canvas 'occupationChart' n'a pas été trouvé.");
+    }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
-
 </body>
 </html>

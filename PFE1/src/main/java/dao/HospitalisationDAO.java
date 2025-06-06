@@ -73,31 +73,23 @@ public class HospitalisationDAO {
         return hosp;
     }
     
-    public boolean updateHospitalisation(Hospitalisation hosp) throws SQLException {
-        String sql = "UPDATE hospitalisation SET ID_Patient = ?, nom_hopital = ?, service = ?, duree = ?, " +
-                     "etat = ?, ID_Medecin = ?, motif = ?, Diagnostic_Initial = ?, Date_Sortie_Prevue = ?, " +
-                     "Date_Sortie_Reelle = ?, lit_id = ? " +
-                     "WHERE ID_Hospitalisation = ?";
-        try (Connection conn = Database.getConnection();
+    public boolean updateLitIdForHospitalisation(int hospitalisationId, Integer nouveauLitId) throws SQLException {
+        // Si nouveauLitId est null, on mettra NULL dans la BDD, sinon la valeur de l'ID.
+        String sql = "UPDATE hospitalisation SET lit_id = ? WHERE ID_Hospitalisation = ?";
+        System.out.println("HospitalisationDAO.updateLitIdForHospitalisation - SQL: " + sql + " Params: nouveauLitId=" + nouveauLitId + ", hospitalisationId=" + hospitalisationId);
+
+        try (Connection conn = Database.getConnection(); // Assure-toi d'avoir ta classe DatabaseConnection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            // ... (ton code de mapping des paramètres est correct) ...
-            pstmt.setInt(1, hosp.getIdPatient());
-            pstmt.setString(2, hosp.getNomHopital());
-            pstmt.setString(3, hosp.getService());
-            pstmt.setString(4, hosp.getDuree());
-            pstmt.setString(5, hosp.getEtat());
-            pstmt.setInt(6, hosp.getIdMedecin());
-            pstmt.setString(7, hosp.getMotif());
-            pstmt.setString(8, hosp.getDiagnosticInitial());
-            pstmt.setDate(9, hosp.getDateSortiePrevue());
-            pstmt.setDate(10, hosp.getDateSortieReelle());
-            if (hosp.getLitId() != null) {
-                pstmt.setInt(11, hosp.getLitId());
+
+            if (nouveauLitId != null && nouveauLitId > 0) {
+                pstmt.setInt(1, nouveauLitId);
             } else {
-                pstmt.setNull(11, java.sql.Types.INTEGER);
+                pstmt.setNull(1, java.sql.Types.INTEGER); // Permet de dé-assigner un lit si nécessaire
             }
-            pstmt.setInt(12, hosp.getId());
-            return pstmt.executeUpdate() > 0;
+            pstmt.setInt(2, hospitalisationId);
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
         }
     }
 
@@ -182,4 +174,53 @@ public class HospitalisationDAO {
         }
         return hosp;
     }
+    
+ // Dans dao/HospitalisationDAO.java
+
+ // ... (vos autres méthodes insertHospitalisation, getById, getCurrentByPatientId, mapRowToHospitalisation, updateLitIdForHospitalisation) ...
+
+ public boolean updateHospitalisation(Hospitalisation hosp) throws SQLException {
+     // Quels champs sont modifiables ?
+     // Probablement : etat, duree, Diagnostic_Initial, Date_Sortie_Prevue, Date_Sortie_Reelle, lit_id (géré par updateLitIdForHospitalisation)
+     // ID_Patient, ID_Medecin, nom_hopital, service, motif, date_admission sont généralement fixés à la création.
+     // Adaptez la requête SQL en fonction des champs que vous voulez permettre de modifier.
+
+     String sql = "UPDATE hospitalisation SET " +
+                  "duree = ?, " +
+                  "etat = ?, " +
+                  "Diagnostic_Initial = ?, " +
+                  "Date_Sortie_Prevue = ?, " +
+                  "Date_Sortie_Reelle = ?, " + // Ajout de Date_Sortie_Reelle
+                  "lit_id = ? " + // On inclut lit_id ici aussi, même s'il y a une méthode dédiée, pour une màj complète
+                  "WHERE ID_Hospitalisation = ?";
+
+     System.out.println("HospitalisationDAO.updateHospitalisation - SQL: " + sql + " pour ID_Hospitalisation: " + hosp.getId());
+
+     try (Connection conn = Database.getConnection();
+          PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+         pstmt.setString(1, hosp.getDuree());
+         pstmt.setString(2, hosp.getEtat());
+         pstmt.setString(3, hosp.getDiagnosticInitial());
+         pstmt.setDate(4, hosp.getDateSortiePrevue());     // java.sql.Date
+         pstmt.setDate(5, hosp.getDateSortieReelle());   // java.sql.Date
+         
+         if (hosp.getLitId() != null && hosp.getLitId() > 0) {
+             pstmt.setInt(6, hosp.getLitId());
+         } else {
+             pstmt.setNull(6, java.sql.Types.INTEGER);
+         }
+         
+         pstmt.setInt(7, hosp.getId()); // Pour la clause WHERE
+
+         int affectedRows = pstmt.executeUpdate();
+         if (affectedRows > 0) {
+             System.out.println("HospitalisationDAO.updateHospitalisation - Mise à jour réussie pour ID: " + hosp.getId());
+             return true;
+         } else {
+             System.out.println("HospitalisationDAO.updateHospitalisation - Aucune ligne mise à jour pour ID: " + hosp.getId() + " (peut-être n'existait-elle pas ou les valeurs étaient identiques).");
+             return false; // Aucune ligne affectée, ou l'enregistrement n'existait pas.
+         }
+     }
+ }
 }

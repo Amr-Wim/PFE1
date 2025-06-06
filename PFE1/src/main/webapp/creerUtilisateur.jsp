@@ -29,9 +29,9 @@
         
         <!-- Liens de navigation affichés côte à côte -->
         <div class="d-flex gap-3">
-            <a class="nav-link active text-white" href="admin_dashboard.jsp">Tableau de bord</a>
+            <a class="nav-link active text-white" href="adminDashboard">Tableau de bord</a>
             <a class="nav-link text-white" href="creerUtilisateur.jsp">Créer utilisateur</a>
-            <a class="nav-link text-white" href="Affectation">Affectation des chambres</a>
+            <a class="nav-link text-white" href="changerLit">Affectation des chambres</a>
             <a class="nav-link text-white" href="planification_sortie.jsp">Planification des sorties</a>
              <!-- BOUTON DECONNEXION -->
             <form action="Logout" method="post" style="margin: 0;">
