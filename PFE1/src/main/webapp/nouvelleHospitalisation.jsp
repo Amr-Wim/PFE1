@@ -1,32 +1,37 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%-- <c:set var="medecin" value="${sessionScope.medecin}"/> --%> <%-- Pas nécessaire si tu utilises directement sessionScope.medecin --%>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Nouvelle Hospitalisation</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css"> <%-- Adapte le chemin vers ton CSS --%>
-  <style>
-    :root {
-      --main-blue: #1e3a5f;
-      --accent-red: #7e0021;
-      --bg-light: #e0f2fe;
-    }
+    <title>Nouvelle Hospitalisation - CarePath</title>
+    
+    <!-- Dépendances -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Style personnalisé -->
+     <style>
+        :root {
+            --main-blue: #1e3a5f;
+            --accent-red: #7e0021;
+            --bg-light: #f4f7f9;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border-color: #dee2e6;
+        }
 
-    body {
-      background-color: var(--bg-light);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
+        body {
+          background-color: #e0f2fe;
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+         /* Header et Footer */
     header {
       background-color: var(--main-blue);
       padding: 20px 60px;
@@ -36,80 +41,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       color: white;
     }
-
-    .logo-title {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo-title img {
-      height: 48px;
-    }
-
-    .title {
-      font-size: 30px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-    }
-
-    .menu-links {
-      display: flex;
-      gap: 8px;
-      margin-left: auto;
-    }
-
-    .menu-links a {
-      color: var(--accent-red);
-      font-weight: bold;
-      background-color: #ffffff;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
-    }
-
-    .menu-links a:hover {
-      background-color: #f1f5f9;
-    }
-
-    main {
-      flex: 1;
-      padding: 50px 20px;
-    }
-
-    .card {
-      background-color: #ffffff;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      max-width: 900px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-      color: var(--accent-red);
-      margin-bottom: 30px;
-      font-weight: bold;
-    }
-
-    table {
-      width: 100%;
-    }
-
-    table th {
-      background-color: var(--main-blue);
-      color: white;
-    }
-
-    table td, table th {
-      vertical-align: middle !important;
-      color: #1e3a5f;
-    }
-
-    footer {
+        footer {
       background-color: var(--main-blue);
       color: #ffffff;
       text-align: center;
@@ -119,7 +51,90 @@
       font-weight: 500;
       letter-spacing: 0.5px;
     }
-  </style>
+
+        main { flex-grow: 1; }
+
+        .form-wizard-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden; /* Pour que le header ne dépasse pas */
+        }
+
+        .wizard-header {
+            background: #1e3a5f;
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+        .wizard-header h2 {
+            margin: 0;
+            font-weight: 700;
+        }
+        .wizard-header p {
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .wizard-body {
+            padding: 2.5rem;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .form-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .section-title {
+            color: var(--accent-red);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+        }
+        .section-title i {
+            margin-right: 0.75rem;
+            width: 24px; /* Pour aligner les textes */
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        
+        /* Style pour les champs en lecture seule */
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .btn-submit-hosp {
+            background-color: var(--accent-red);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .btn-submit-hosp:hover {
+            background-color: #6a001c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(126, 0, 33, 0.3);
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
@@ -166,112 +181,97 @@
     </div>
   </div>
 </header>
-<main class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h4>Nouvelle Hospitalisation</h4>
+<main class="container py-5">
+        <div class="mx-auto" style="max-width: 850px;">
+            <div class="form-wizard-container">
+                <div class="wizard-header">
+                    <h2>Nouvelle Hospitalisation</h2>
+                    <p>Formulaire d'admission d'un patient</p>
+                </div>
+
+                <div class="wizard-body">
+                    <%-- Affichage des messages d'erreur/succès --%>
+                    <c:if test="${not empty requestScope.error}">
+                        <div class="alert alert-danger mb-4"><i class="fas fa-exclamation-triangle me-2"></i>${requestScope.error}</div>
+                    </c:if>
+                    <c:if test="${not empty param.success}">
+                         <div class="alert alert-success mb-4"><i class="fas fa-check-circle me-2"></i>${param.success}</div>
+                    </c:if>
+
+                    <form action="${pageContext.request.contextPath}/creerHospitalisation" method="post">
+                        
+                        <!-- Section 1: Informations du Contexte -->
+                        <div class="form-section">
+                            <h4 class="section-title"><i class="fas fa-user-md"></i>Contexte de l'Admission</h4>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Médecin traitant</label>
+                                    <input type="text" class="form-control" value="Dr. ${sessionScope.medecin.prenom} ${sessionScope.medecin.nom}" readonly>
+                                    <input type="hidden" name="idMedecin" value="${sessionScope.medecin.id}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Hôpital</label>
+                                    <input type="text" class="form-control" name="nomHopital" value="${sessionScope.medecin.nomHopital}" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Service d'admission</label>
+                                    <input type="text" class="form-control" name="service" value="${sessionScope.medecin.nomService}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Sélection du Patient -->
+                        <div class="form-section">
+                             <h4 class="section-title"><i class="fas fa-user-injured"></i>Identification du Patient</h4>
+                             <div class="mb-3">
+                                <label for="idPatient" class="form-label">Sélectionner le patient *</label>
+                                <select class="form-select form-select-lg" id="idPatient" name="idPatient" required>
+                                    <option value="" disabled selected>-- Cliquez pour choisir un patient dans la liste --</option>
+                                    <c:forEach var="patient" items="${patientsList}">
+                                        <option value="${patient.id}">${patient.prenom} ${patient.nom} (CIN: ${patient.cin})</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Section 3: Détails de l'Hospitalisation -->
+                        <div class="form-section">
+                            <h4 class="section-title"><i class="fas fa-file-medical"></i>Détails de l'Hospitalisation</h4>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="motif" class="form-label">Motif d'hospitalisation *</label>
+                                    <textarea class="form-control" id="motif" name="motif" rows="3" required placeholder="Ex: Douleurs thoraciques, Bilan pré-opératoire..."></textarea>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="diagnosticInitial" class="form-label">Diagnostic initial (si connu)</label>
+                                    <textarea class="form-control" id="diagnosticInitial" name="diagnosticInitial" rows="2" placeholder="Ex: Suspicion d'infarctus du myocarde..."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="duree" class="form-label">Durée prévue *</label>
+                                    <select class="form-select" id="duree" name="duree" required>
+                                        <option value="" disabled selected>-- Sélectionner une durée --</option>
+                                        <option value="1 jour">1 Jour</option>
+                                        <option value="2 jours">2 Jours</option>
+                                        <option value="3 jours">3 Jours</option>
+                                        <option value="5 jours">5 Jours</option>
+                                        <option value="1 semaine">1 Semaine</option>
+                                        <option value="2 semaines">2 Semaines</option>
+                                        <option value="1 mois">1 Mois</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-submit-hosp btn-lg">
+                                <i class="fas fa-check-circle me-2"></i> Valider et Trouver un Lit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <c:if test="${not empty errorMessage}">
-                <div class="alert alert-danger" role="alert">
-                    ${errorMessage}
-                </div>
-            </c:if>
-            <c:if test="${not empty requestScope.error}"> <%-- Pour les erreurs du CreerHospitalisationServlet --%>
-                <div class="alert alert-danger mb-4">${requestScope.error}</div>
-            </c:if>
-            <c:if test="${not empty param.success}">
-                 <div class="alert alert-success" role="alert">
-                    ${param.success}
-                </div>
-            </c:if>
-
-            <form action="${pageContext.request.contextPath}/creerHospitalisation" method="post">
-                <!-- Informations du médecin (lecture seule) -->
-                <div class="mb-3">
-                    <label class="form-label">Médecin traitant</label>
-                    <input type="text" class="form-control"
-                           value="Dr. ${sessionScope.medecin.prenom} ${sessionScope.medecin.nom}"
-                           readonly>
-                    <input type="hidden" name="idMedecin" value="${sessionScope.medecin.id}">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Hôpital</label>
-                    <input type="text" class="form-control"
-                           value="${not empty sessionScope.medecin.nomHopital ? sessionScope.medecin.nomHopital : 'Non spécifié'}"
-                           readonly>
-                    <input type="hidden" name="nomHopital" value="${sessionScope.medecin.nomHopital}">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Service</label>
-                    <input type="text" class="form-control"
-                           value="${not empty sessionScope.medecin.nomService ? sessionScope.medecin.nomService : 'Non spécifié'}"
-                           readonly>
-                    <input type="hidden" name="service" value="${sessionScope.medecin.nomService}">
-                </div>
-
-                <!-- Sélection du Patient -->
-                <div class="mb-3">
-                    <label for="idPatient" class="form-label">Patient</label>
-                    <select class="form-select" id="idPatient" name="idPatient" required>
-                        <option value="">-- Sélectionner un patient --</option>
-                        <c:forEach var="patient" items="${patientsList}">
-                            <option value="${patient.id}">${patient.nom} ${patient.prenom} (CIN: ${patient.cin})</option>
-                        </c:forEach>
-                    </select>
-                </div>
-
-                <!-- Champs modifiables -->
-                <div class="mb-3">
-    <label for="duree" class="form-label">Durée prévue de l'hospitalisation</label>
-    <select class="form-select" id="duree" name="duree" required>
-        <option value="">-- Sélectionner une durée --</option>
-        <option value="1 jour">1 Jour</option>
-        <option value="2 jours">2 Jours</option>
-        <option value="3 jours">3 Jours</option>
-        <option value="4 jours">4 Jours</option>
-        <option value="5 jours">5 Jours</option>
-        <option value="6 jours">6 Jours</option>
-        <option value="1 semaine">1 Semaine</option>
-        <option value="10 jours">10 Jours</option>
-        <option value="2 semaines">2 Semaines</option>
-        <option value="3 semaines">3 Semaines</option>
-        <option value="1 mois">1 Mois</option>
-        <option value="2 mois">2 Mois</option>
-        <option value="3 mois">3 Mois</option>
-        <!-- Tu peux ajouter d'autres options courantes ici -->
-        <!-- Si tu veux toujours permettre une saisie libre en plus, c'est plus complexe.
-             Pour l'instant, restons avec le select. -->
-    </select>
-</div>
-
-                <div class="mb-3">
-                    <label for="motif" class="form-label">Motif d'hospitalisation</label>
-                    <textarea class="form-control" id="motif" name="motif" rows="3" required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="diagnosticInitial" class="form-label">Diagnostic initial</label>
-                    <textarea class="form-control" id="diagnosticInitial" name="diagnosticInitial" rows="3"></textarea> <%-- Rendu non-obligatoire, à toi de voir --%>
-                </div>
-
-                
-
-                
-
-
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-save me-2"></i> Enregistrer l'hospitalisation
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</main>
-
+    </main>
 
   
   <!-- Footer -->

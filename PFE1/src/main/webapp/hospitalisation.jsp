@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <%-- Adapte le chemin vers ton fichier CSS principal pour le patient si tu en as un --%>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_patient_commun.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
         :root {
             --main-blue: #1e3a5f;
@@ -113,30 +113,55 @@
 
     <%-- Inclure ton header patient ici. Exemple: --%>
     <!-- Header -->
-  <header style="background-color: #1e3a5f; padding: 20px 60px; border-bottom: 4px solid #7e0021; box-shadow: 0 4px 12px rgba(0,0,0,0.2); color: white;">
-    <div class="container-fluid d-flex align-items-center justify-content-between">
-        <!-- Logo et titre -->
-        <div class="d-flex align-items-center gap-3">
-            <img src="image/image2.png" alt="Logo" style="height: 50px;">
-            <span class="fs-3 fw-bold text-uppercase" style="text-shadow: 0 2px 4px rgba(126, 0, 33, 0.6);">
-                CarePath
-            </span>
+   <header style="background-color: #1e3a5f;">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between py-2">
+                <!-- Logo et titre -->
+                <div class="d-flex align-items-center gap-3">
+                    <img src="image/image2.png" alt="Logo CarePath" style="height: 50px;">
+                    <span class="fs-3 fw-bold text-white text-uppercase" style="letter-spacing: 1px; text-shadow: 0 2px 3px rgba(0,0,0,0.3);">
+                        CarePath
+                    </span>
+                </div>
+                
+                <!-- Menu et infos utilisateur -->
+                <div class="d-flex align-items-center gap-4">
+                    <!-- Navigation principale -->
+                    <nav class="d-flex align-items-center gap-3 me-4">
+                        <a class="nav-link text-white active hover-effect" href="patient_dashboard.jsp">
+                            <i class="fas fa-tachometer-alt me-1"></i>
+                            <span class="d-none d-lg-inline">Tableau de bord</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="fiche_patient.jsp">
+                            <i class="fas fa-user me-1"></i>
+                            <span class="d-none d-lg-inline">Informations</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="dossier_medical.jsp">
+                            <i class="fas fa-file-medical me-1"></i>
+                            <span class="d-none d-lg-inline">Dossier médical</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="patient/hospitalisation">
+                            <i class="fas fa-procedures me-1"></i>
+                            <span class="d-none d-lg-inline">Hospitalisation</span>
+                        </a>
+                        <a class="nav-link text-white hover-effect" href="analyses.jsp">
+                            <i class="fas fa-flask me-1"></i>
+                            <span class="d-none d-lg-inline">Analyses</span>
+                        </a>
+                    </nav>
+                    
+                   
+                        <!-- Bouton Déconnexion -->
+                        <form action="Logout" method="post" class="m-0">
+                             <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                                
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <!-- Liens de navigation affichés côte à côte -->
-        <div class="d-flex gap-3">
-            <a class="nav-link active text-white" href="patient_dashboard.jsp">Tableau de bord</a>
-            <a class="nav-link text-white" href="fiche_patient.jsp">Informations personnelles</a>
-            <a class="nav-link text-white" href="rendezvous.jsp">Rendez vous</a>
-            <a class="nav-link text-white" href="parcours_patient.jsp">Parcours</a>
-                        <a class="nav-link text-white" href="bon_sortie.jsp">Bon sortie</a>
-                                    <a class="nav-link text-white" href="resultats_analyses.jsp">Résultats d'éxamens</a>
-         <!-- BOUTON DECONNEXION -->
-            <form action="Logout" method="post" style="margin: 0;">
-                <button type="submit" class="btn btn-danger">Déconnexion</button>
-            </form>
-        </div>
- </div>
    </header>
  
 

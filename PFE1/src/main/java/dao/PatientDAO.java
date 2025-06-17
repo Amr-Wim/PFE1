@@ -183,4 +183,21 @@ public class PatientDAO {
 	        }
 	        return patient;
 	    }
+	    
+	    public List<Patient> findAll() throws SQLException {
+	        List<Patient> patients = new ArrayList<>();
+	        String sql = "SELECT p.id, u.nom, u.prenom FROM patient p JOIN utilisateur u ON p.id = u.id ORDER BY u.nom, u.prenom";
+	        try (Connection conn = Database.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql);
+	             ResultSet rs = stmt.executeQuery()) {
+	            while (rs.next()) {
+	                Patient patient = new Patient();
+	                patient.setId(rs.getInt("id"));
+	                patient.setNom(rs.getString("nom"));
+	                patient.setPrenom(rs.getString("prenom"));
+	                patients.add(patient);
+	            }
+	        }
+	        return patients;
+	    }
 	}

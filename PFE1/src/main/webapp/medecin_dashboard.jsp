@@ -1,136 +1,132 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Médecin</title>
+  <title>Tableau de bord - Médecin</title>
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
- <!-- Bootstrap CSS -->
- 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-8x6yQ1EoE8Is0Q9vZff4Kn8Z4Ofy+HEsf3F9EQoTlf9oZ2KvDdBbSz+ukOfT6+f88l+c1E9KgyGlTYKhwD1F2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Dépendances CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <!-- Style personnalisé inspiré du dashboard patient -->
   <style>
+    :root {
+        --main-blue: #1e3a5f;
+        --accent-red: #7e0021;
+        --bg-light: #f4f7f9;
+    }
+    
     body {
-      background-color: #e0f2fe;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+     background-color: #e0f2fe;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
     }
-  
-  .AB p{
-    color :#7e0021;
-     text-align: center;
-     font-size: 28px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+    
+    main {
+        flex-grow: 1;
     }
+
+    /* Message de bienvenue */
+    .welcome-message {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    .welcome-message h1 {
+        font-weight: 700;
+    }
+
+    /* Cartes d'action */
+    .action-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e9ecef;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .card-icon {
+        font-size: 3rem;
+        color: var(--main-blue);
+        margin-bottom: 1rem;
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--main-blue);
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-text {
+        color: #555;
+        flex-grow: 1;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-dashboard {
+        background-color: var(--accent-red);
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px; /* Boutons en pilule */
+        transition: all 0.3s ease;
+    }
+    
+    .btn-dashboard:hover {
+        background-color: #6a001c;
+        transform: scale(1.05);
+        color: white;
+    }
+
+    /* Header et Footer */
     header {
-      background-color: #1e3a5f;
+      background-color: var(--main-blue);
       padding: 20px 60px;
       display: flex;
       align-items: center;
-      border-bottom: 4px solid #7e0021;
+      border-bottom: 4px solid var(--accent-red);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       color: white;
     }
-
-    .logo-title {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo-title img {
-      height: 48px;
-      width: auto;
-    }
-
-    .title {
-      font-size: 28px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 50px 20px;
-    }
-
-    .card-group {
-      gap: 30px;
-    }
-
-    .menu-card {
-      border-radius: 20px;
-      padding: 30px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      background-color: #fff;
-      border-top: 6px solid #7e0021;
-    }
-
-    .menu-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-    }
-
-    .menu-card h5 {
-      font-weight: bold;
-      color: #1e3a5f;
-      margin-bottom: 15px;
-    }
-
-    .menu-card p {
-      color: #334155;
-    }
-
-    footer {
-      background-color: #1e3a5f;
+        footer {
+      background-color: var(--main-blue);
       color: #ffffff;
       text-align: center;
-      padding: 16px 30px;
+      padding: 18px 30px;
       font-size: 14px;
-      border-top: 4px solid #7e0021;
+      border-top: 4px solid var(--accent-red);
       font-weight: 500;
       letter-spacing: 0.5px;
-    }
-
-    @media (max-width: 991px) {
-      .card-group {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-        .menu-links {
-      margin-left: auto;
-      display: flex;
-      gap: 10px;
-    }
-
-    .menu-links a {
-      background-color: #ffffff;
-      color: #7e0021;
-      font-weight: bold;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-    }
-
-    .menu-links a:hover {
-      background-color: #f1f5f9;
     }
     
   </style>
@@ -155,17 +151,17 @@
        <a class="nav-link text-white d-flex align-items-center gap-1" href="medecin_dashboard.jsp">
           <i class="fas fa-tachometer-alt me-1"></i><span>Tableau de bord</span>
         </a>
-        <a class="nav-link text-white d-flex align-items-center gap-1" href="nouvelleHospitalisation.jsp">
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="nouvelleHospitalisationForm">
           <i class="fas fa-hospital-user"></i><span>Nouvelle Hospitalisation</span>
         </a>
        
         <a class="nav-link text-white d-flex align-items-center gap-1" href="PlanifierExamen1">
           <i class="fas fa-calendar-check"></i><span>Plannifier Examens</span>
         </a>
-        <a class="nav-link text-white d-flex align-items-center gap-1" href="diagnostic.jsp">
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="PrepareDiagnosticServlet">
           <i class="fas fa-microscope"></i><span>Diagnostics</span>
         </a>
-        <a class="nav-link text-white d-flex align-items-center gap-1" href="PrescriptionMedicale.jsp">
+        <a class="nav-link text-white d-flex align-items-center gap-1" href="PrescriptionServlet">
           <i class="fas fa-pills"></i><span>Préscriptions</span>
         </a>
         
@@ -182,60 +178,86 @@
   </div>
 </header>
 
-<div class="container">
-            <!-- Message de bienvenue -->
-            <div class="welcome-message text-center mb-5">
-                <h1 class="mb-3" style="color: var(--main-blue);">
-                    <i class="fas fa-user-circle me-2"></i>Bienvenue, ${utilisateur.prenom}
-                </h1>
-                <p class="lead">Accédez rapidement à toutes les fonctionnalités de votre espace medecin</p>
-            </div>
-<div class="AB">
-
-</div>
-  <!-- Main Dashboard -->
-  <main>
+ <main class="py-5">
     <div class="container">
-      <div class="row justify-content-center card-group">
-
-        <div class="col-md-4">
-          <a href="nouvelleHospitalisationForm" style="text-decoration: none;">
-            <div class="menu-card">
-              <h5>Nouvelle Hospitalisation</h5>
-              <p>Initiez une nouvelle hospitalisation et renseignez les données du patient.</p>
+            <!-- Message de bienvenue amélioré -->
+            <div class="welcome-message text-center">
+                <h1 class="display-5">
+                    Bienvenue, Dr. ${sessionScope.medecin.prenom} ${sessionScope.medecin.nom}
+                </h1>
+                <p class="lead">Votre tableau de bord centralisé pour la gestion des patients.</p>
             </div>
-          </a>
-        </div>
+            
+            <!-- Cartes de fonctionnalités -->
+            <div class="row g-4">
+                
+                <div class="col-lg-4 col-md-6">
+                    <a href="${pageContext.request.contextPath}/nouvelleHospitalisationForm" class="action-card">
+                        <div class="card-body">
+                            <div class="card-icon"><i class="fas fa-hospital-user"></i></div>
+                            <h3 class="card-title">Nouvelle Hospitalisation</h3>
+                            <p class="card-text">Admettre un nouveau patient, choisir son service et lui attribuer un lit.</p>
+                            <span class="btn btn-dashboard mt-auto">Commencer</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <a href="${pageContext.request.contextPath}/medecin/mesHospitalisations" class="action-card">
+                        <div class="card-body">
+                            <div class="card-icon"><i class="fas fa-procedures"></i></div>
+                            <h3 class="card-title">Gérer les Sorties</h3>
+                            <p class="card-text">Consulter les patients hospitalisés, planifier leur sortie et générer les dossiers.</p>
+                            <span class="btn btn-dashboard mt-auto">Gérer</span>
+                        </div>
+                    </a>
+                </div>
+                
+                 <div class="col-lg-4 col-md-6">
+                    <a href="${pageContext.request.contextPath}/PlanifierExamen1" class="action-card">
+                        <div class="card-body">
+                            <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                            <h3 class="card-title">Planifier des Examens</h3>
+                            <p class="card-text">Prescrire des analyses (biologiques, radiologiques...) pour un patient.</p>
+                             <span class="btn btn-dashboard mt-auto">Planifier</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <a href="${pageContext.request.contextPath}/PrepareDiagnosticServlet" class="action-card">
+                        <div class="card-body">
+                            <div class="card-icon"><i class="fas fa-stethoscope"></i></div>
+                            <h3 class="card-title">Poser un Diagnostic</h3>
+                            <p class="card-text">Ajouter un diagnostic au dossier d'un patient hospitalisé.</p>
+                             <span class="btn btn-dashboard mt-auto">Diagnostiquer</span>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <a href="${pageContext.request.contextPath}/PrescriptionServlet" class="action-card">
+                        <div class="card-body">
+                            <div class="card-icon"><i class="fas fa-pills"></i></div>
+                            <h3 class="card-title">Créer une Prescription</h3>
+                            <p class="card-text">Rédiger une ordonnance de médicaments pour un patient.</p>
+                             <span class="btn btn-dashboard mt-auto">Prescrire</span>
+                        </div>
+                    </a>
+                </div>
 
-        <div class="col-md-4">
-          <a href="historiqueMedicale.jsp" style="text-decoration: none;">
-            <div class="menu-card">
-              <h5>Historique Médical</h5>
-              <p>Consultez les antécédents médicaux et traitements passés du patient.</p>
+                <div class="col-lg-4 col-md-6">  
+                   <a href="${pageContext.request.contextPath}/HistoriqueServlete" class="action-card">
+                        <div class="card-body">
+                            <div class="card-icon"><i class="fas fa-notes-medical"></i></div>
+                            <h3 class="card-title">Consulter un Dossier</h3>
+                            <p class="card-text">Rechercher un patient et accéder à son historique médical complet.</p>
+                             <span class="btn btn-dashboard mt-auto">Consulter</span>
+                        </div>
+                    </a>
+                </div>
+
             </div>
-          </a>
-        </div>
-        
-        <div class="col-md-4">
-          <a href="PlanifierExamen" style="text-decoration: none;">
-            <div class="menu-card">
-              <h5>Plannifier Examens</h5>
-              <p>Donner au patient des examens cliniques à faire.</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="col-md-4">
-          <a href="resultatsExamens.jsp" style="text-decoration: none;">
-            <div class="menu-card">
-              <h5>Résultats examens</h5>
-              <p>Affichez les résultats d’analyses et d’examens cliniques du patient.</p>
-            </div>
-          </a>
-        </div>
-
-
-      </div>
     </div>
   </main>
 

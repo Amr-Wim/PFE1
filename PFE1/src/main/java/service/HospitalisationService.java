@@ -85,8 +85,12 @@ public class HospitalisationService {
         if (litLibere) {
             // Optionnel: mettre à jour l'état de l'hospitalisation
             if ("En cours".equals(hosp.getEtat())) {
-                hosp.setEtat("Sortie"); // Ou un autre statut approprié
-                hosp.setDateSortieReelle(new java.sql.Date(System.currentTimeMillis())); // java.sql.Date
+                hosp.setEtat("Sortie");
+                
+                // --- LA CORRECTION EST ICI ---
+                // On crée un objet Timestamp, qui correspond au type attendu par le setter
+                hosp.setDateSortieReelle(new java.sql.Timestamp(System.currentTimeMillis()));
+                
                 hospitalisationDAO.updateHospitalisation(hosp);
             }
             return true;

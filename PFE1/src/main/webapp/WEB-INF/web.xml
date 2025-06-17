@@ -165,4 +165,56 @@
     <servlet-name>PreparerSortieServlet</servlet-name>
     <url-pattern>/PreparerSortieServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AjouterDiagnosticServlet</display-name>
+    <servlet-name>AjouterDiagnosticServlet</servlet-name>
+    <servlet-class>controllers.AjouterDiagnosticServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>PrepareDiagnosticServlet</display-name>
+    <servlet-name>PrepareDiagnosticServlet</servlet-name>
+    <servlet-class>controllers.PrepareDiagnosticServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>AjouterSoinServlet</display-name>
+    <servlet-name>AjouterSoinServlet</servlet-name>
+    <servlet-class>controllers.AjouterSoinServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>AjouterObservationServlet</display-name>
+    <servlet-name>AjouterObservationServlet</servlet-name>
+    <servlet-class>controllers.AjouterObservationServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>AfficherSoinsServlet</display-name>
+    <servlet-name>AfficherSoinsServlet</servlet-name>
+    <servlet-class>controllers.AfficherSoinsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>RechercherObservationServlet</display-name>
+    <servlet-name>RechercherObservationServlet</servlet-name>
+    <servlet-class>controllers.RechercherObservationServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>PrescriptionServlet</display-name>
+    <servlet-name>PrescriptionServlet</servlet-name>
+    <servlet-class>controllers.PrescriptionServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <description></description>
+    <display-name>AfficherFicheServlet</display-name>
+    <servlet-name>AfficherFicheServlet</servlet-name>
+    <servlet-class>controllers.AfficherFicheServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AfficherFicheServlet</servlet-name>
+    <url-pattern>/AfficherFicheServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

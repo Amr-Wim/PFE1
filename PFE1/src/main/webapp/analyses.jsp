@@ -2,147 +2,153 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CAREPATH - Mes Analyses</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Dépendances externes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Style personnalisé -->
     <style>
+        /* --- Thème de couleurs et polices --- */
         :root {
             --carepath-blue: #1e3a5f;
             --carepath-red: #7e0021;
-            --carepath-light: #f8f9fa;
-            --carepath-dark: #212529;
+            --carepath-bg: #f4f7f9; /* Fond général plus neutre */
+            --carepath-card-bg: #ffffff;
+            --carepath-text-dark: #2c3e50;
+            --carepath-text-muted: #7f8c8d;
+            --carepath-success: #27ae60;
+            --carepath-warning: #f39c12;
+            --carepath-info: #3498db;
         }
-        
+
         body {
-            background-color: #e0f2fe;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+            background-color: var(--carepath-bg);
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--carepath-text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        
-        .header {
-      background-color: #1e3a5f;
-      padding: 20px 60px;
-      display: flex;
-      align-items: center;
-      border-bottom: 4px solid var(--accent-red);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      color: white;
-    }
-         footer {
-      background-color: var(--carepath-blue);
-      color: #ffffff;
-      text-align: center;
-      padding: 18px 30px;
-      font-size: 14px;
-      border-top: 4px solid var(--accent-red);
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-        
+
+        /* --- Composants réutilisables --- */
+        .header, footer {
+            background-color: var(--carepath-blue);
+            color: white;
+            border-top: 4px solid var(--carepath-red);
+            border-bottom: 4px solid var(--carepath-red);
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        /* --- Style de la page --- */
         .main-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-            padding: 25px;
-            margin-top: 30px;
-            margin-bottom: 30px;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
         }
         
+        .page-title {
+            color: var(--carepath-blue);
+            font-weight: 700;
+        }
+        
+        /* Style des cartes d'examen */
         .exam-card {
-            border-left: 4px solid var(--carepath-red);
-            border-radius: 8px;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
+            background-color: var(--carepath-card-bg);
+            border: 1px solid #e9ecef;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease-in-out;
+            overflow: hidden; /* Pour que le header ne dépasse pas */
         }
-        
+
         .exam-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
         
         .exam-header {
-            background-color: var(--carepath-blue);
+            background: linear-gradient(135deg, var(--carepath-blue), #2c3e50);
             color: white;
-            border-radius: 8px 8px 0 0 !important;
-            padding: 15px 20px;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .exam-title-in-card {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
         }
         
         .exam-body {
-            padding: 20px;
+            padding: 1.5rem;
         }
-        
-        .exam-footer {
-            background-color: #f8f9fa;
-            border-top: 1px solid #eee;
-            padding: 10px 20px;
+
+        .exam-meta-label {
             font-size: 0.85rem;
-            color: #6c757d;
-        }
-        
-        .badge-status {
-            font-size: 0.8rem;
-            padding: 5px 10px;
-            font-weight: 500;
-        }
-        
-        .ajeun-badge {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-        
-        .nav-pills .nav-link.active {
-            background-color: var(--carepath-red);
-        }
-        
-        .sidebar {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .sidebar-title {
-            color: var(--carepath-blue);
-            border-bottom: 2px solid var(--carepath-red);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .btn-carepath {
-            background-color: var(--carepath-red);
-            color: white;
-        }
-        
-        .btn-carepath:hover {
-            background-color: #6e001b;
-            color: white;
-        }
-        
-        .exam-title {
+            color: var(--carepath-text-muted);
+            text-transform: uppercase;
             font-weight: 600;
-            color: var(--carepath-blue);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
         }
-        
-        .exam-meta {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-        
-        .exam-value {
-            font-weight: 500;
-            color: var(--carepath-dark);
-        }
-        
-        .no-exams {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 30px;
+        .exam-meta-label i {
+            margin-right: 0.5rem;
+            width: 16px; /* Pour aligner les textes */
             text-align: center;
+        }
+
+        .exam-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--carepath-text-dark);
+            margin-left: 24px; /* Aligner avec le texte après l'icône */
+        }
+        
+        .notes-medecin {
+            background-color: #eaf2f8; /* Un bleu très clair */
+            border-left: 4px solid var(--carepath-info);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        /* Statuts et badges */
+        .badge-status {
+            padding: 0.4em 0.8em;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .badge-status.bg-success { background-color: var(--carepath-success) !important; }
+        .badge-status.bg-warning { background-color: var(--carepath-warning) !important; }
+        .badge-status.bg-info { background-color: var(--carepath-info) !important; }
+
+        .ajeun-badge {
+            background-color: var(--carepath-warning);
+            color: white;
+            font-size: 0.75rem;
+            vertical-align: middle;
+        }
+        
+        /* Message "Aucun Examen" */
+        .no-exams {
+            background-color: var(--carepath-card-bg);
+            border: 2px dashed #dee2e6;
+            border-radius: 0.75rem;
+            padding: 3rem;
+            text-align: center;
+            color: var(--carepath-text-muted);
         }
     </style>
 </head>
@@ -181,139 +187,89 @@
         </div>
     </header>
 
-    <div class="container main-container">
-        <div class="row">
-            <!-- Sidebar Filters -->
-            <div class="col-lg-3 mb-4">
-                <div class="sidebar">
-                    <h5 class="sidebar-title"><i class="fas fa-filter me-2"></i>Filtrer les analyses</h5>
-                    
-                    <div class="mb-3">
-                        <label class="form-label exam-meta">Statut</label>
-                        <select class="form-select mb-3">
-                            <option>Tous les statuts</option>
-                            <option>Demandé</option>
-                            <option>En cours</option>
-                            <option>Terminé</option>
-                        </select>
+      <main class="container main-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 mb-0 page-title">
+                <i class="fas fa-flask-vial me-2"></i>Mes Demandes d'Analyses
+            </h2>
+            <span class="badge bg-primary rounded-pill fs-6">
+                ${fn:length(demandesExamens)} Total
+            </span>
+        </div>
+        
+        <c:choose>
+            <c:when test="${not empty demandesExamens}">
+                <c:forEach items="${demandesExamens}" var="demande">
+                    <div class="exam-card">
+                        <div class="exam-header d-flex justify-content-between align-items-center">
+                            <h3 class="exam-title-in-card">
+                                ${demande.examen.nomExamen}
+                            </h3>
+                            <span class="badge ${demande.statutDemande == 'Terminé' ? 'bg-success' : demanda.statutDemande == 'En cours' ? 'bg-warning' : 'bg-info'} badge-status">
+                                <i class="fas ${demande.statutDemande == 'Terminé' ? 'fa-check-circle' : 'fa-hourglass-half'} me-1"></i>
+                                ${demande.statutDemande}
+                            </span>
+                        </div>
                         
-                        <label class="form-label exam-meta">Type d'analyse</label>
-                        <select class="form-select mb-3">
-                            <option>Tous les types</option>
-                            <option>Biologie</option>
-                            <option>Imagerie</option>
-                            <option>Microbiologie</option>
-                        </select>
-                        
-                        <label class="form-label exam-meta">Période</label>
-                        <select class="form-select">
-                            <option>Toutes périodes</option>
-                            <option>Cette semaine</option>
-                            <option>Ce mois</option>
-                            <option>3 derniers mois</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn btn-carepath w-100 mt-2">
-                        <i class="fas fa-check me-1"></i> Appliquer
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="h4 mb-0 exam-title">
-                        <i class="fas fa-flask me-2"></i>Mes Examens Demandés
-                    </h2>
-                    <span class="badge bg-primary">
-                        ${fn:length(demandesExamens)} analyses
-                    </span>
-                </div>
-                
-                <c:choose>
-                    <c:when test="${not empty demandesExamens}">
-                        <c:forEach items="${demandesExamens}" var="demande">
-                            <div class="exam-card shadow-sm">
-                                <div class="exam-header d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="mb-0 text-white">
-                                            <c:if test="${not empty demande.examen.typeExamen}">
-                                                ${demande.examen.typeExamen.nomType} : 
-                                            </c:if>
-                                            ${demande.examen.nomExamen}
+                        <div class="exam-body">
+                            <div class="row g-4">
+                                <!-- Colonne Gauche -->
+                                <div class="col-lg-6">
+                                    <div class="mb-3">
+                                        <p class="exam-meta-label"><i class="far fa-calendar-alt"></i>Demandé le</p>
+                                        <p class="exam-value">
+                                            <fmt:formatDate value="${demande.dateDemande}" pattern="dd MMMM yyyy"/>
+                                        </p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <p class="exam-meta-label"><i class="far fa-calendar-check"></i>Résultats prévus</p>
+                                        <p class="exam-value">
+                                            <fmt:formatDate value="${demande.dateEstimeeResultatsPrets}" pattern="dd MMMM yyyy"/>
+                                        </p>
+                                    </div>
+                                </div>
+                                <!-- Colonne Droite -->
+                                <div class="col-lg-6">
+                                     <div class="mb-3">
+                                        <p class="exam-meta-label"><i class="fas fa-vials"></i>Type d'Analyse</p>
+                                        <p class="exam-value">
+                                            ${demande.examen.typeExamen.nomType}
+                                        </p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <p class="exam-meta-label"><i class="fas fa-info-circle"></i>Instructions</p>
+                                        <p class="exam-value">
                                             <c:if test="${demande.examen.doitEtreAJeun}">
-                                                <span class="badge ajeun-badge ms-2">À jeun</span>
+                                                <span class="badge ajeun-badge me-2">À jeun</span>
                                             </c:if>
-                                        </h5>
+                                            <c:out value="${empty demande.examen.instructionsPreparatoires ? 'Aucune instruction spécifique' : demande.examen.instructionsPreparatoires}" />
+                                        </p>
                                     </div>
-                                    <span class="badge ${demande.statutDemande == 'Terminé' ? 'bg-success' : 
-                                        demanda.statutDemande == 'En cours' ? 'bg-warning' : 'bg-info'} badge-status">
-                                        ${demande.statutDemande}
-                                    </span>
-                                </div>
-                                
-                                <div class="exam-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <span class="exam-meta"><i class="far fa-calendar-alt me-2"></i>Demandé le :</span>
-                                                <p class="exam-value">
-                                                    <fmt:formatDate value="${demande.dateDemande}" pattern="dd/MM/yyyy"/>
-                                                </p>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <span class="exam-meta"><i class="far fa-clock me-2"></i>Résultats prévus :</span>
-                                                <p class="exam-value">
-                                                    <fmt:formatDate value="${demande.dateEstimeeResultatsPrets}" pattern="dd/MM/yyyy"/>
-                                                    <c:if test="${not empty demande.examen.dureePreparationResultatsHeures}">
-                                                        <br>
-                                                        <small class="text-muted">(Délai: ${demande.examen.dureePreparationResultatsHeures} heures)</small>
-                                                    </c:if>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-md-6">
-                                            <c:if test="${not empty demande.examen.instructionsPreparatoires}">
-                                                <div class="mb-3">
-                                                    <span class="exam-meta"><i class="fas fa-info-circle me-2"></i>Instructions :</span>
-                                                    <p class="exam-value">${demande.examen.instructionsPreparatoires}</p>
-                                                </div>
-                                            </c:if>
-                                        </div>
-                                    </div>
-                                    
-                                    <c:if test="${not empty demande.notesMedecin}">
-                                        <div class="alert alert-light mt-3">
-                                            <h6 class="alert-heading exam-meta">
-                                                <i class="fas fa-comment-medical me-2"></i>Commentaires du médecin
-                                            </h6>
-                                            <p class="mb-0 exam-value">${demande.notesMedecin}</p>
-                                        </div>
-                                    </c:if>
-                                </div>
-                                
-                                <div class="exam-footer">
-                                    <i class="far fa-calendar me-1"></i>
-                                    <fmt:formatDate value="${demande.dateCreation}" pattern="dd/MM/yyyy HH:mm"/>
                                 </div>
                             </div>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="no-exams">
-                            <i class="fas fa-flask fa-3x mb-3" style="color: #ddd;"></i>
-                            <h4 class="exam-title">Aucun examen demandé</h4>
-                            <p class="exam-meta">Vous n'avez aucun examen enregistré pour le moment.</p>
+                            
+                            <c:if test="${not empty demande.notesMedecin}">
+                                <hr class="my-3">
+                                <div class="notes-medecin">
+                                    <h6 class="exam-meta-label mb-2">
+                                        <i class="fas fa-comment-medical"></i>Commentaires du médecin
+                                    </h6>
+                                    <p class="mb-0">${demande.notesMedecin}</p>
+                                </div>
+                            </c:if>
                         </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-    </div>
-
+                    </div>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <div class="no-exams mt-4">
+                    <i class="fas fa-inbox fa-3x mb-3 text-black-50"></i>
+                    <h4 class="h5">Aucun examen demandé</h4>
+                    <p class="text-muted">Vous n'avez aucune demande d'analyse enregistrée pour le moment.</p>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </main>
      <footer>
         &copy; 2025 - CarePath. Tous droits réservés.
     </footer>

@@ -320,4 +320,37 @@ public class HospitalisationDAO {
         }
         return hosp;
     }
+    
+    public List<Hospitalisation> getPatientsActifsParMedecin(int idMedecin) {
+        List<Hospitalisation> hospitalisations = new ArrayList<>();
+        // Cette requête récupère les infos de l'hospitalisation ET du patient associé
+        String sql = "SELECT h.*, u.nom AS patient_nom, u.prenom AS patient_prenom " +
+                     "FROM hospitalisation h " +
+                     "JOIN patient p ON h.ID_Patient = p.id " +
+                     "JOIN utilisateur u ON p.id = u.id " +
+                     "WHERE h.ID_Medecin = ? AND h.etat = 'En cours'";
+        
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idMedecin);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Hospitalisation hosp = new Hospitalisation();
+                hosp.setId(rs.getInt("ID_Hospitalisation"));
+                hosp.setIdPatient(rs.getInt("ID_Patient"));
+                // ... peupler les autres champs de l'hospitalisation si besoin
+                
+                // Peupler les champs "transitoires" pour l'affichage dans la liste
+                hosp.setPatientNom(rs.getString("patient_nom"));
+                hosp.setPatientPrenom(rs.getString("patient_prenom"));
+                
+                hospitalisations.add(hosp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hospitalisations;
+    }
 }

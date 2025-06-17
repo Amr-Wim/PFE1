@@ -9,6 +9,7 @@ import dao.AntecedantDAO;
 import dao.DemandeExamenDAO;
 import dao.DiagnosticDAO;
 import dao.HospitalisationDAO;
+import dao.InfirmierDao; // Assurez-vous que cet import est présent
 import dao.MedecinDAO;
 import dao.PatientDAO;
 import dao.TraitementDAO;
@@ -21,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.DemandeExamen;
 import model.Hospitalisation;
+import model.Infirmier; // Assurez-vous que cet import est présent
 import model.Medecin;
 import model.Patient;
 import model.Utilisateur;
@@ -29,6 +31,7 @@ import model.Utilisateur;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    // La méthode doPost principale
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
@@ -50,7 +53,9 @@ public class LoginServlet extends HttpServlet {
 
             HttpSession session = request.getSession();
             session.setAttribute("utilisateur", utilisateur);
-            session.setAttribute("userId", utilisateur.getId());
+            // session.setAttribute("userId", utilisateur.getId()); // Redondant car déjà dans l'objet utilisateur
+
+            // --- GESTION SPÉCIFIQUE PAR RÔLE ---
             
             if ("medecin".equals(utilisateur.getRole())) {
                 try {
@@ -58,30 +63,23 @@ public class LoginServlet extends HttpServlet {
                     Medecin medecin = medecinDAO.getMedecinWithServiceAndHopital(utilisateur.getId());
                     
                     if (medecin != null) {
-                        // Transfert des données de base
                         medecin.setNom(utilisateur.getNom());
                         medecin.setPrenom(utilisateur.getPrenom());
                         medecin.setEmail(utilisateur.getEmail());
-                        // ... autres attributs nécessaires
-                        
-                        System.out.println("Médecin à stocker en session - Service: " + medecin.getNomService() 
-                            + ", Hôpital: " + medecin.getNomHopital());
-                        
                         session.setAttribute("medecin", medecin);
                     } else {
                         System.err.println("Aucune donnée trouvée pour le médecin ID: " + utilisateur.getId());
                     }
                 } catch (SQLException e) {
-                    System.err.println("Erreur DB: " + e.getMessage());
-                    e.printStackTrace();
+                    System.err.println("Erreur DB lors du chargement du médecin: " + e.getMessage());
                 }
-            }
-            
-            
-            
-            // Gestion spécifique pour les patients
-            if ("patient".equals(utilisateur.getRole())) {
+            } else if ("patient".equals(utilisateur.getRole())) {
                 handlePatientSession(utilisateur, session, request);
+            } 
+            // --- LA LIGNE AJOUTÉE EST ICI ---
+            else if ("infirmier".equals(utilisateur.getRole())) {
+                // On appelle la méthode que vous aviez déjà écrite
+                handleInfirmierSession(utilisateur, session);
             }
             
             // Redirection selon le rôle
@@ -89,7 +87,7 @@ public class LoginServlet extends HttpServlet {
             
         } catch (Exception e) {
             System.err.println("Erreur lors de l'authentification: " + e.getMessage());
-            request.setAttribute("errorMessage", "Une erreur technique est survenue. Veuillez réessayer.");
+            request.setAttribute("errorMessage", "Une erreur technique est survenue.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
@@ -138,7 +136,30 @@ public class LoginServlet extends HttpServlet {
         DiagnosticDAO diagnosticDAO = new DiagnosticDAO();
         session.setAttribute("diagnostics", diagnosticDAO.getDiagnosticsByPatientId(patientId));
     }
-
+    
+    private void handleInfirmierSession(Utilisateur utilisateur, HttpSession session) {
+        try {
+            InfirmierDao dao = new InfirmierDao(); 
+            Infirmier infirmier = dao.findById(utilisateur.getId()); 
+            
+            if (infirmier != null) {
+                infirmier.setNom(utilisateur.getNom());
+                infirmier.setPrenom(utilisateur.getPrenom());
+                infirmier.setEmail(utilisateur.getEmail());
+                infirmier.setRole(utilisateur.getRole());
+                
+                session.setAttribute("infirmier", infirmier);
+                System.out.println("LOGIN_SERVLET: L'attribut 'infirmier' a été ajouté à la session. ID de session: " + session.getId());
+            } else {
+                System.err.println("LOGIN_SERVLET (handleInfirmierSession): L'objet infirmier est NULL car non trouvé en BDD pour ID: " + utilisateur.getId());
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur DB lors du chargement de l'infirmier: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    
     private void redirectByRole(String role, HttpServletResponse response) throws IOException {
         switch (role) {
             case "patient":
@@ -151,7 +172,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("infirmier_dashboard.jsp");
                 break;
             case "admin":
-                response.sendRedirect("admin_dashboard.jsp");
+                response.sendRedirect("adminDashboard");
                 break;
             default:
                 response.sendRedirect("login.jsp");
