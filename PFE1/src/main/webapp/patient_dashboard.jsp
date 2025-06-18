@@ -193,7 +193,7 @@
                             <i class="fas fa-procedures card-icon"></i>
                             <h3 class="section-title">Hospitalisation</h3>
                             <p class="card-text">Informations sur votre séjour hospitalier</p>
-                            <a href="hospitalisation.jsp" class="btn btn-dashboard mt-3">
+                            <a href="patient/hospitalisation" class="btn btn-dashboard mt-3">
                                 <i class="fas fa-info-circle me-2"></i>Détails
                             </a>
                         </div>

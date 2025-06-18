@@ -170,7 +170,7 @@
                 <a class="nav-link text-white" href="dossier_medical.jsp">
                     <i class="fas fa-file-medical me-1"></i> Dossier médical
                 </a>
-                <a class="nav-link text-white" href="hospitalisation.jsp">
+                <a class="nav-link text-white" href="patient/hospitalisation">
                     <i class="fas fa-procedures me-1"></i> Hospitalisation
                 </a>
                 <a class="nav-link text-white" href="analyses.jsp">

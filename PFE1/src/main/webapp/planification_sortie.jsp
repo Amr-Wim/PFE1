@@ -58,6 +58,8 @@
 
         <button type="submit" class="btn btn-primary">Planifier la sortie</button>
     </form>
+    
+    
 </div>
 <footer>
      &copy; 2025 - CarePath. Tous droits réservés.

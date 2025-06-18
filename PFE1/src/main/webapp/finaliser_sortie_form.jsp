@@ -224,7 +224,14 @@
                                 <i class="fas fa-check-circle me-2"></i>Finaliser la Sortie et Générer le Dossier
                             </button>
                              <a href="${pageContext.request.contextPath}/medecin/mesHospitalisations" class="btn btn-secondary ms-2">Annuler</a>
+                             
                         </div>
+                        
+                        <div class="text-center mt-5">
+            <a href="${pageContext.request.contextPath}/medecin_dashboard.jsp" class="btn btn-custom-primary btn-lg">
+                <i class="fas fa-arrow-left me-2"></i> Retour au Tableau de Bord
+            </a>
+        </div>
                     </form>
                 </div>
             </div>
